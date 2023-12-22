@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input"
 import { SignupValidation } from "@/lib/validation"
 import { createUserMutation } from "@/lib/react-query/queries"
 import { Icons } from "@/components/ui/icons"
-import { Loader } from "lucide-react"
 
 const SignupForm = () => {
 
@@ -27,7 +26,6 @@ const SignupForm = () => {
 	})
 
 	const onSubmit = (data: userData) => {
-		console.log(data);
 		userMutation.mutate(data);
 	}
 
@@ -58,7 +56,7 @@ const SignupForm = () => {
 								render={({ field }) => (
 									<FormItem>
 										<FormControl>
-											<Input placeholder="Email" {...field} />
+											<Input type="email" placeholder="Email" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -70,7 +68,7 @@ const SignupForm = () => {
 								render={({ field }) => (
 									<FormItem>
 										<FormControl>
-											<Input placeholder="Password" {...field} />
+											<Input type="password" placeholder="Password" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -82,16 +80,36 @@ const SignupForm = () => {
 								render={({ field }) => (
 									<FormItem>
 										<FormControl>
-											<Input placeholder="Confirm password" {...field} />
+											<Input type="password" placeholder="Confirm password" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
 							{
-								userMutation.isPending ? <Loader/> :
-								<Button className="w-full" type="submit">Create Account</Button>
+								userMutation.isError ? (
+									<div className="text-center text-red-600 text-sm">{userMutation?.error?.response?.data?.message}</div>
+								) : null
 							}
+							{
+								userMutation.isSuccess ? ( 
+									<div className="text-center text-red-600 text-sm">Registered successfully! Please <Link to="/sign-in">login</Link> to enter.</div> 
+								) : null
+							}
+
+							<Button className="w-full" type="submit" disabled={userMutation.isPending}>
+								{
+									userMutation.isPending?
+									<>
+										<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+										</svg>
+										Please wait...
+									</> : <span>Create Account</span>
+								}
+							</Button>
+							
 						</form>
 
 					</div>

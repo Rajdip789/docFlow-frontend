@@ -6,7 +6,8 @@ export const SignupValidation = z.object({
 	password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
 	confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, { 
-	message: "Password and confirm password do not match" 
+	message: "Password and confirm password do not match",
+	path: ["confirmPassword"] 
 })
 
 export const LoginValidation = z.object({

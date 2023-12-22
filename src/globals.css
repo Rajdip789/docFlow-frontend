@@ -26,7 +26,7 @@
     --ring: 262.1 83.3% 57.8%;
     --radius: 0.75rem;
   }
- 
+
   .dark {
     --background: 224 71.4% 4.1%;
     --foreground: 210 20% 98%;
@@ -56,10 +56,17 @@
   }
 }
 
+@layer utilities {
+  .app-flex {
+    @apply flex flex-row justify-center items-center;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     @apply font-sans
