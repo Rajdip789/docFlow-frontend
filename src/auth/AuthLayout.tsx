@@ -1,13 +1,23 @@
+import useAuth from '@/hooks/useAuth'
+import { createRefreshMutation } from '@/lib/react-query/queries';
+import { useEffect } from 'react';
 import { Outlet, Navigate } from 'react-router-dom'
 
 const AuthLayout = () => {
-	const isAuthenticated = false;
+
+	const { user, isAuthenticated } = useAuth();
+	const refreshMutation = createRefreshMutation();
+
+	useEffect(() => {
+		if(!isAuthenticated && !user.accessToken) refreshMutation.mutate();
+	},[])
 
 	return (
 		<>
-			{
+			{ refreshMutation.isPending ? <h1>Loading...</h1> :
+			
 				isAuthenticated ? (
-					<Navigate to="/" />
+					<Navigate to="/home" />
 				) : 
 				<>
 					<section className='flex flex-1 justify-center items-center flex-col relative'>
