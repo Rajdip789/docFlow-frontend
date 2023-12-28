@@ -1,9 +1,10 @@
 import * as z from "zod";
 import axios from '@/lib/api/axios';
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { SignupValidation, LoginValidation } from "../validation";
 import useAuth from "@/hooks/useAuth";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
 type CustomError = {
 	message: string;
@@ -27,7 +28,7 @@ type ResponseUser = {
 export const createUserMutation = () => {
 	return useMutation<any, CustomError, z.infer<typeof SignupValidation>>({
 		mutationFn: (userData: z.infer<typeof SignupValidation>) =>
-			axios.post("/user/create-user", userData),
+			axios.post("/auth/register", userData),
 	});
 };
 
@@ -73,5 +74,29 @@ export const createRefreshMutation = () => {
 			
 			setIsAuthenticated(true);
 		},
+	});
+};
+
+export const createLogoutMutation = () => {
+	const { setUser, setIsAuthenticated } = useAuth();	
+
+	return useMutation({
+		mutationFn: () =>
+			axios.post("/auth/logout", null, { withCredentials: true }),
+
+		onSuccess: () => {
+			setUser({ id: "", username: "", email: "", imageUrl: "", accessToken: "" });
+			setIsAuthenticated(false);
+		}
+	});
+};
+
+export const useGetAllDocumentsQuery = () => {
+	const { user } = useAuth();
+	const axiosPrivate = useAxiosPrivate();
+
+	return useQuery({
+		queryKey: ['getAllDocs'],
+		queryFn: () => axiosPrivate.get(`/user/docs/${user.id}`),
 	});
 };
