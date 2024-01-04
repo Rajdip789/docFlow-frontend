@@ -6,24 +6,30 @@ import { SignupValidation, LoginValidation } from "../validation";
 import useAuth from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 
-type CustomError = {
-	message: string;
-	response?: {
-		data?: {
-			message?: string;
-		};
-	};
-}
+const setUserDataAndAuth = ({ setUser, setIsAuthenticated } : Omit<IContextType, 'user'| 'isAuthenticated'>) => (data: any) => {
+	const userData: ResponseUser = data.data.user;
+  
+	setUser({
+		id: userData._id,
+		username: userData?.username,
+		email: userData.email,
+		imageUrl: userData?.image,
+		accessToken: userData.accessToken
+	});
+  
+	setIsAuthenticated(true);
+};
 
-type ResponseUser = {
-	_id: string
-	username: string;
-	email: string;
-	image: string;
-	accessToken: string;
-	createdAt: string;
-	updatedAt: string;
-}
+export const createSocialLoginMutation = () => {
+	const { setUser, setIsAuthenticated } = useAuth();
+
+	return useMutation({
+		mutationFn: (codeResponse: GoogleCodeResponse) =>
+			axios.post('auth/google', { code: codeResponse.code }, { withCredentials: true }),
+
+		onSuccess: setUserDataAndAuth({ setUser, setIsAuthenticated })
+	});
+};
 
 export const createUserMutation = () => {
 	return useMutation<any, CustomError, z.infer<typeof SignupValidation>>({
@@ -39,18 +45,7 @@ export const createLoginMutation = () => {
 		mutationFn: (userData: z.infer<typeof LoginValidation>) =>
 			axios.post("/auth/login", userData, { withCredentials: true }),
 
-		onSuccess: (data) => {
-			const userData: ResponseUser = data.data.user;
-
-			setUser({
-				id: userData._id,
-				username: userData?.username,
-				email: userData.email,
-				imageUrl: userData?.image,
-				accessToken: userData.accessToken
-			});
-			setIsAuthenticated(true);
-		},
+		onSuccess: setUserDataAndAuth({ setUser, setIsAuthenticated })
 	});
 };
 
@@ -61,19 +56,7 @@ export const createRefreshMutation = () => {
 		mutationFn: () =>
 			axios.post("/auth/refresh", null, { withCredentials: true }),
 
-		onSuccess: (data) => {
-			const userData: ResponseUser = data.data.user;
-
-			setUser({
-				id: userData._id,
-				username: userData?.username,
-				email: userData.email,
-				imageUrl: userData?.image,
-				accessToken: userData.accessToken
-			});
-			
-			setIsAuthenticated(true);
-		},
+		onSuccess: setUserDataAndAuth({ setUser, setIsAuthenticated })
 	});
 };
 

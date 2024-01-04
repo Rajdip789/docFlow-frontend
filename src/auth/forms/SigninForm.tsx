@@ -12,7 +12,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { LoginValidation } from "@/lib/validation"
 import { createLoginMutation } from "@/lib/react-query/queries"
-import { Icons } from "@/components/ui/icons"
+import SocialLogin from "@/components/shared/SocialLogin"
 
 const SigninForm = () => {
 
@@ -99,10 +99,7 @@ const SigninForm = () => {
 				</div>
 			</CardContent>
 			<CardFooter className="text-sm flex flex-col items-center justify-center gap-1">
-				<Button variant={"outline"} className="w-full" type="submit">
-					<Icons.google className="mr-2 h-4 w-4" />
-					Sign in with Google
-				</Button>
+				<SocialLogin/>
 				<Button variant="link" className="text-black font-normal">
 					<Link to="/sign-up">Don't have an Account?</Link>
 				</Button>

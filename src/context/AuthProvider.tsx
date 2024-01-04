@@ -1,4 +1,7 @@
 import { ReactNode, createContext, useState } from "react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+const google_client_id = import.meta.env.VITE_GOOGLE_CLIENTID;
 
 export const INITIAL_USER = {
     id: "",
@@ -27,7 +30,9 @@ export const AuthProvider = ({ children } : Props ) => {
 
     return (
         <AuthContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated }}>
-            {children}
+            <GoogleOAuthProvider clientId={google_client_id}>
+                {children}
+            </GoogleOAuthProvider>
         </AuthContext.Provider>
     )
 }
