@@ -1,7 +1,7 @@
 import useAuth from '@/hooks/useAuth'
 import { createRefreshMutation } from '@/lib/react-query/queries';
 import { useEffect } from 'react';
-import { Outlet, Navigate } from 'react-router-dom'
+import { Outlet, Navigate, Link } from 'react-router-dom'
 
 const AuthLayout = () => {
 
@@ -30,6 +30,9 @@ const AuthLayout = () => {
 								}}
 							/>
 						</div>
+						<Link to='/' className='mb-4'>
+							<img className='w-11' src='./docFlowIcon.png' /> 
+						</Link>
 						<Outlet/>
 						<div
 						className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl"

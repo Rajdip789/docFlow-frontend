@@ -1,3 +1,4 @@
+import DocumentEditor from './_root/pages/DocumentEditor';
 import Home from './_root/pages/Home';
 import UserDocs from './_root/pages/UserDocs';
 import AuthLayout from './auth/AuthLayout';
@@ -20,7 +21,10 @@ const App = () => {
 
         <Route element={<RequireAuth/>}>
           <Route path='/home' element={<UserDocs/>} />
+          <Route path='/document/:docId' element={<DocumentEditor/>} />
         </Route>
+
+        <Route path='*' element={<div>Not Found</div>}/>
       </Routes>
     </main>
   )

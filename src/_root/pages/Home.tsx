@@ -46,9 +46,6 @@ const Home = () => {
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            {/* <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
-              Log in <span aria-hidden="true">&rarr;</span>
-            </a> */}
             <Button>
               <Link to='/sign-up'>Sign up</Link>
             </Button>
@@ -63,7 +60,7 @@ const Home = () => {
                 <a href="#" className="-m-1.5 p-1.5">
                   <img
                     className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                    src="./docFlowIcon.png"
                     alt=""
                   />
                 </a>
@@ -85,12 +82,11 @@ const Home = () => {
                     ))}
                   </div>
                   <div className="py-6">
-                    <a
-                      href="#"
-                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                    >
-                      Log in
-                    </a>
+                      <Link 
+                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        to="sign-in">
+                          Log in
+                      </Link>
                   </div>
                 </div>
               </div>
@@ -114,7 +110,7 @@ const Home = () => {
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
                 Learn and explore the features of our product.{' '}
-                <a href="#" className="font-semibold text-indigo-600">
+                <a href="#" className="font-semibold text-violet-700">
                   <span className="absolute inset-0" aria-hidden="true" />
                   Read more <span aria-hidden="true">&rarr;</span>
                 </a>
@@ -159,10 +155,10 @@ const Home = () => {
         <div></div>
       </section>
       <section id="contact" className='h-40 bg-slate-100'>
-        <div className='flex items-center justify-between w-full h-full p-8'>
+        <div className='flex flex-col items-center justify-between w-full h-full p-8 sm:flex-row'>
           <div>
             <p className='text-sm'>docflowofficial@gmail.com</p>
-            <p className='text-sm'>© 2020 DocFlow Inc. All rights reserved.</p>
+            <p className='text-sm'>© 2024 DocFlow Inc. All rights reserved.</p>
           </div>
           <div className='flex flex-row gap-4'>
             <div className='social-icon'><FaFacebookF size={22} color="#7c3aed"/></div>
