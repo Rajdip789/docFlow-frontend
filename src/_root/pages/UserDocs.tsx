@@ -1,23 +1,27 @@
+import AllDocBody from "@/components/shared/DocHome/AllDocBody"
+import AllDocHeader from "@/components/shared/DocHome/AllDocHeader"
+import HiddenTemplateProvider from "@/context/HiddenTemplateProvide"
+
 const UserDocs = () => {
-    //Ignore below code
-    // const { status, data, error } = useGetAllDocumentsQuery();
+	//Ignore below code
+	// const { status, data, error } = useGetAllDocumentsQuery();
 
-    // if (status === 'pending') {
-    //     return <span>Loading...</span>
-    // }
+	// if (status === 'pending') {
+	//     return <span>Loading...</span>
+	// }
 
-    // if (status === 'error') {
-    //     return <span>Error: {error.message}</span>
-    // }
+	// if (status === 'error') {
+	//     return <span>Error: {error.message}</span>
+	// }
 
-    return (
-        <div>
-            {/* Create Header - Search, profile, App icon
-            Create body - all user documnets should be shown and Button for create doc (Alos create a new route for create-doc/id) 
-            (Create demo data for showing all documents)*/}
-            <h1>Home page</h1>
-        </div>
-    )
+	return (
+		<HiddenTemplateProvider>
+			<div className="h-screen w-full flex flex-col text-sm md:text-base">
+				<AllDocHeader />
+				<AllDocBody />
+			</div>
+		</HiddenTemplateProvider>
+	)
 }
 
 export default UserDocs

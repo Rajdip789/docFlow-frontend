@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { SignupValidation, LoginValidation } from "../validation";
 import useAuth from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useNavigate } from "react-router-dom";
 
 const setUserDataAndAuth = ({ setUser, setIsAuthenticated } : Omit<IContextType, 'user'| 'isAuthenticated'>) => (data: any) => {
 	const userData: ResponseUser = data.data.user;
@@ -62,6 +63,7 @@ export const createRefreshMutation = () => {
 
 export const createLogoutMutation = () => {
 	const { setUser, setIsAuthenticated } = useAuth();	
+	const navigate = useNavigate();
 
 	return useMutation({
 		mutationFn: () =>
@@ -70,6 +72,7 @@ export const createLogoutMutation = () => {
 		onSuccess: () => {
 			setUser({ id: "", username: "", email: "", imageUrl: "", accessToken: "" });
 			setIsAuthenticated(false);
+			navigate('/');
 		}
 	});
 };

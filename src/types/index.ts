@@ -38,3 +38,20 @@ type CustomError = {
 		};
 	};
 }
+
+type DocumentResponse = {
+	chat_id: string;
+	content: string;
+	mail_access_id: string;
+	owner_id: string;
+	title: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+type SaveDocCardProps = {
+	ImgC: string;
+	Name: string;
+	SubTitle: string;
+	isCreate: boolean;
+}
