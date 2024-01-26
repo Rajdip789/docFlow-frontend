@@ -5,16 +5,19 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 import { IoDocumentText, IoEllipsisVerticalOutline } from "react-icons/io5";
 import { MdDeleteForever, MdDriveFileRenameOutline } from "react-icons/md";
+import { Link } from "react-router-dom";
 
-const SaveDocCard = ({ ImgC, Name, SubTitle }: SaveDocCardProps) => {
+const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 	const [docName, setDocName] = useState(Name);	
 
 	return (
 		<div className="w-1/2 md:w-1/4 lg:w-1/5 mt-1 mb-5">
 			<div className="w-5/6 mx-auto">
-				<div className='rounded-t-sm containerStyles'>
-					<img src={ImgC} className="w-full" />
-				</div>
+				<Link to={`/document/${DocId}`}>
+					<div className='rounded-t-sm containerStyles'>
+						<img src={ImgC} className="w-full" />
+					</div>
+				</Link>
 
 				<div className="border-x rounded-b-sm border-b border-gray-400 h-16 p-1 flex justify-between items-center">
 					<div className="flex flex-col w-4/5 overflow-hidden lg:text-sm md:text-sm text-xs">

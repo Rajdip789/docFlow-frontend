@@ -40,6 +40,7 @@ type CustomError = {
 }
 
 type DocumentResponse = {
+	_id: string;
 	chat_id: string;
 	content: string;
 	mail_access_id: string;
@@ -50,6 +51,7 @@ type DocumentResponse = {
 }
 
 type SaveDocCardProps = {
+	DocId: string;
 	ImgC: string;
 	Name: string;
 	SubTitle: string;

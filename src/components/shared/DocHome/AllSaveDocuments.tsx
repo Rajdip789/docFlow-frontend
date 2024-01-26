@@ -28,6 +28,7 @@ const AllSaveDocuments = () => {
 					allUserDocs.map((each, i) => {
 						return (
 							<SaveDocCard
+								DocId={each._id}
 								ImgC={cv}
 								Name={each.title}
 								SubTitle={dayjs(each.createdAt).format('DD-MM-YYYY')}

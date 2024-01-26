@@ -64,6 +64,10 @@
   .containerStyles { 
     @apply cursor-pointer border border-gray-400 hover:border-violet-500 hover:border-2 overflow-hidden;
   }
+
+  .quill-editor .ql-editor {
+    @apply w-full md:w-4/6 min-h-screen p-16 m-3 md:m-6 shadow-md bg-white;
+  }
 }
 
 @layer base {
@@ -75,4 +79,27 @@
     @apply bg-background text-foreground;
     @apply font-sans
   }
+}
+
+.ql-toolbar.ql-snow {
+  position: fixed;
+}
+
+.quill-editor .ql-container.ql-snow {
+  border: none;
+  display: flex;
+  justify-content: center;
+}
+
+.quill-editor .ql-toolbar.ql-snow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #ffffff;
+  border: none;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, .5);
+  border-radius: 2rem;
 }

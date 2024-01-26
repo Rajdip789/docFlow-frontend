@@ -25,7 +25,7 @@ const Profile = () => {
 				<DropdownMenuTrigger className="rounded-full">
 					<Avatar className="hover:border-2">
 						<AvatarImage src={user.imageUrl}/>
-						<AvatarFallback>D</AvatarFallback>
+						<AvatarFallback className='text-violet-600 font-bold capitalize'>{user.username[0]}</AvatarFallback>
 					</Avatar>
 				</DropdownMenuTrigger>
 

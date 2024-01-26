@@ -9,45 +9,52 @@ const AuthLayout = () => {
 	const refreshMutation = createRefreshMutation();
 
 	useEffect(() => {
-		if(!isAuthenticated && !user.accessToken) refreshMutation.mutate();
-	},[])
+		if (!isAuthenticated && !user.accessToken) refreshMutation.mutate();
+	}, [])
 
 	return (
 		<>
-			{ refreshMutation.isPending ? <h1>Loading...</h1> :
-			
+			{refreshMutation.isPending ?
+				<div className='app-flex w-full'>
+					<svg className="animate-spin h-14 w-14 text-violet-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+						<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+						<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+					</svg>
+				</div>
+				:
 				isAuthenticated ? (
 					<Navigate to="/home" />
-				) : 
-				<>
-					<section className='flex flex-1 justify-center items-center flex-col relative'>
-						<div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+				) :
+
+					<>
+						<section className='flex flex-1 justify-center items-center flex-col relative'>
+							<div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+								<div
+									className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+									style={{
+										clipPath:
+											'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+									}}
+								/>
+							</div>
+							<Link to='/' className='mb-4'>
+								<img className='w-11' src='./docFlowIcon.png' />
+							</Link>
+							<Outlet />
 							<div
-								className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-								style={{
-								clipPath:
-									'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-								}}
-							/>
-						</div>
-						<Link to='/' className='mb-4'>
-							<img className='w-11' src='./docFlowIcon.png' /> 
-						</Link>
-						<Outlet/>
-						<div
-						className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl"
-						aria-hidden="true"
-						>
-							<div
-								className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
-								style={{
-								clipPath:
-									'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-								}}
-							/>
-						</div>
-					</section>
-				</>
+								className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl"
+								aria-hidden="true"
+							>
+								<div
+									className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+									style={{
+										clipPath:
+											'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+									}}
+								/>
+							</div>
+						</section>
+					</>
 			}
 		</>
 	)
