@@ -2,6 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import { createRefreshMutation } from "@/lib/react-query/queries";
 import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import LoadingUi from "./LoadingUi";
 
 const RequireAuth = () => {
     const { user, isAuthenticated } = useAuth();
@@ -18,7 +19,7 @@ const RequireAuth = () => {
 				? <Outlet />
 				: (
 					<>
-						{ refreshMutation.isPending && <h1>Loading...</h1> }
+						{ refreshMutation.isPending && <LoadingUi/> }
 
 						{ refreshMutation.isSuccess && isAuthenticated && <Outlet/>  }
 	

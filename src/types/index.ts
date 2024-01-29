@@ -9,8 +9,8 @@ type Iuser = {
 type IContextType = {
     user: Iuser
     setUser: React.Dispatch<React.SetStateAction<Iuser>>
-    isAuthenticated: Boolean
-    setIsAuthenticated: React.Dispatch<React.SetStateAction<Boolean>>
+    isAuthenticated: boolean
+    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type GoogleCodeResponse =  {

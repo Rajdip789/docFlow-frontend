@@ -26,7 +26,7 @@ type Props = {
 
 export const AuthProvider = ({ children } : Props ) => {
     const [user, setUser] = useState<Iuser>(INITIAL_USER);
-    const [isAuthenticated, setIsAuthenticated] = useState<Boolean>(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     return (
         <AuthContext.Provider value={{ user, setUser, isAuthenticated, setIsAuthenticated }}>

@@ -1,15 +1,15 @@
 import AllDocBody from "@/components/shared/DocHome/AllDocBody"
 import AllDocHeader from "@/components/shared/DocHome/AllDocHeader"
-import HiddenTemplateProvider from "@/context/HiddenTemplateProvide"
+import AppDataProvider from "@/context/AppdataProvider";
 
 const UserDocs = () => {
 	return (
-		<HiddenTemplateProvider>
+		<AppDataProvider>
 			<div className="h-screen w-full flex flex-col text-sm md:text-base">
 				<AllDocHeader />
 				<AllDocBody />
 			</div>
-		</HiddenTemplateProvider>
+		</AppDataProvider>
 	)
 }
 

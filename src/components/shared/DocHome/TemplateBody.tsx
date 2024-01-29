@@ -5,17 +5,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 import TemplatePartOne from "./TemplatePartOne";
 import HiddenTemplate from "./HiddenTemplate";
-import { HiddenTemplateContext } from "@/context/HiddenTemplateProvide";
+import { AppDataContext } from "@/context/AppdataProvider";
 
 const TemplateBody = () => {
-
 	const [templateShow, setTemplateShow] = useState(true);
-	const { hiddenTempValue, setHiddenTempValue } = useContext(HiddenTemplateContext);
+	const { hiddenTempValue, setHiddenTempValue, searchText } = useContext(AppDataContext);
 
 	return (
 		<div className="bg-violet-100 w-full">
 			<div
-				className={`w-full md:w-3/4 md:py-10 py-5 m-auto px-2 ${templateShow ? "block" : "hidden"}`}>
+				className={`w-full md:w-3/4 md:py-10 py-5 m-auto px-2 ${(templateShow && !searchText) ? "block" : "hidden"}`}>
 				
 				{/* upper section template */}
 				<div className="md:py-3 md:px-5 px-3 py-2 font-semibold">

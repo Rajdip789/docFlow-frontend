@@ -14,6 +14,9 @@ const UserDocumentsBody = () => {
 	const [stickyVal, setStickyVal] = useState(false);
 	const [showRoundCard, setShowRoundCard] = useState(false);
 
+	const [isSort, setIsSort] = useState(false);
+	const [createdBy, setCreatedBy] = useState('anyone');
+
 	useEffect(() => {
 		const handleScroll = () => {
 			const saveDocumentsHeader: HTMLElement = document.getElementById("saveDocumentsHeader")!;
@@ -51,14 +54,14 @@ const UserDocumentsBody = () => {
 					<div className="md:py-2 py-1">Saved documents</div>
 					<div className="flex items-center h-fit">
 						<div className="lg:mr-8 md:mr-4 mr-2">
-							<Select>
-								<SelectTrigger className="w-44 h-fit py-1 my-0">
+							<Select value={createdBy} onValueChange={val => setCreatedBy(val)}>
+								<SelectTrigger className="w-44 h-fit py-1 my-0 focus:ring-white">
 									<SelectValue placeholder="Created by anyone" />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem className="cursor-pointer" value="x">Created by me </SelectItem>
-									<SelectItem className="cursor-pointer" value="y">Created by others</SelectItem>
-									<SelectItem className="cursor-pointer" value="z">Created by anyone</SelectItem>
+									<SelectItem className="cursor-pointer" value="me">Created by me </SelectItem>
+									<SelectItem className="cursor-pointer" value="others">Created by others</SelectItem>
+									<SelectItem className="cursor-pointer" value="anyone">Created by anyone</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
@@ -70,11 +73,17 @@ const UserDocumentsBody = () => {
 										<MdSortByAlpha />
 									</DropdownMenuTrigger>
 									<DropdownMenuContent className="shadow-md bg-white rounded-sm border p-2">
-										<DropdownMenuItem className="flex items-center py-1 px-2 rounded-sm hover:!bg-violet-200 cursor-pointer">
+										<DropdownMenuItem
+										 className="flex items-center py-1 px-2 rounded-sm hover:!bg-violet-200 cursor-pointer"
+										 onClick={() => setIsSort(true)}
+										>
 											<MdOutlineDateRange className="mr-3" />
 											Sort by Date
 										</DropdownMenuItem>
-										<DropdownMenuItem className="flex items-center py-1 px-2 rounded-sm hover:!bg-violet-200 cursor-pointer">
+										<DropdownMenuItem
+										 className="flex items-center py-1 px-2 rounded-sm hover:!bg-violet-200 cursor-pointer"
+										 onClick={() => setIsSort(false)}
+										>
 											<FaSortAlphaDown className="mr-3" />
 											Sort by Title
 										</DropdownMenuItem>
@@ -91,7 +100,7 @@ const UserDocumentsBody = () => {
 			
 			<div className="w-full md:w-3/4 m-auto">
 				{/* All Documents */}
-				<AllSaveDocuments />
+				<AllSaveDocuments IsSort={isSort} CreatedBy={createdBy}/>
 			</div>
 
 			{showRoundCard ? <RoundCreateCard /> : null}

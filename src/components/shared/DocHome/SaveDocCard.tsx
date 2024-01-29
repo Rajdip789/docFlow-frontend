@@ -6,9 +6,21 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { IoDocumentText, IoEllipsisVerticalOutline } from "react-icons/io5";
 import { MdDeleteForever, MdDriveFileRenameOutline } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { useDeleteDocumentMutation, useRenameDocumentMutation } from "@/lib/react-query/queries";
 
 const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 	const [docName, setDocName] = useState(Name);	
+
+	const renameDocumentMutation =  useRenameDocumentMutation();
+	const deleteDocumentMutation =  useDeleteDocumentMutation();
+
+	const handleRenameDocument = () => {
+		renameDocumentMutation.mutate({DocId, docName});
+	}
+
+	const handleDeleteDocument = () => {
+		deleteDocumentMutation.mutate(DocId);
+	}
 
 	return (
 		<div className="w-1/2 md:w-1/4 lg:w-1/5 mt-1 mb-5">
@@ -65,11 +77,9 @@ const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 											Cancel
 										</AlertDialogCancel>
 										<AlertDialogAction
-											className={
-												docName == ""
-													? "bg-gray-200 text-gray-700 hover:bg-gray-200 hover:text-gray-700 cursor-not-allowed "
-													: ""
-											}>
+											onClick={() => handleRenameDocument()}
+											className={ docName ? "" : "bg-gray-200 text-gray-700 hover:bg-gray-200 hover:text-gray-700 cursor-not-allowed"}
+										>
 											Save
 										</AlertDialogAction>
 									</AlertDialogFooter>
@@ -97,7 +107,9 @@ const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 										<AlertDialogCancel className="hover:text-gray-800 hover:border-violet-500 text-violet-800">
 											Cancel
 										</AlertDialogCancel>
-										<AlertDialogAction>Delete</AlertDialogAction>
+										<AlertDialogAction onClick={() => {handleDeleteDocument()}}>
+											Delete
+										</AlertDialogAction>
 									</AlertDialogFooter>
 								</AlertDialogContent>
 							</AlertDialog>

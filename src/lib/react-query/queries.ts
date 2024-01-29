@@ -1,7 +1,7 @@
 import * as z from "zod";
 import axios from '@/lib/api/axios';
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SignupValidation, LoginValidation } from "../validation";
 import useAuth from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
@@ -84,5 +84,33 @@ export const useGetAllDocumentsQuery = () => {
 	return useQuery({
 		queryKey: ['getAllDocs'],
 		queryFn: () => axiosPrivate.get(`/user/docs/${user.id}`),
+	});
+};
+
+export const useRenameDocumentMutation = () => {
+	const queryClient = useQueryClient()
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: ({ DocId, docName }: { DocId: string, docName: string }) =>
+			axiosPrivate.put(`/doc/rename-docs/${DocId}`, {title : docName}),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['getAllDocs'], exact: true, })
+		}
+	});
+};
+
+export const useDeleteDocumentMutation = () => {
+	const queryClient = useQueryClient()
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: (DocId : string) =>
+			axiosPrivate.delete(`/doc/delete-docs/${DocId}`),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['getAllDocs'], exact: true, })
+		}
 	});
 };
