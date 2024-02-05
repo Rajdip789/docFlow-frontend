@@ -55,5 +55,12 @@ type SaveDocCardProps = {
 	ImgC: string;
 	Name: string;
 	SubTitle: string;
+}
+
+type EachDocCardProps = {
+	DocId: string;
+	ImgC: string;
+	Name: string;
+	SubTitle: string;
 	isCreate: boolean;
 }

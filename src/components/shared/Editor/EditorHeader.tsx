@@ -3,13 +3,13 @@ import Profile from "../Profile"
 import Logo from "@/assets/logo.png";
 
 import { MdOutlineMessage } from "react-icons/md";
-import { FaGlobeAmericas } from "react-icons/fa";
 import { FaClockRotateLeft } from "react-icons/fa6";
 import EditorMenu from "./EditorMenu";
 import { useState } from "react";
+import ShareModal from "./ShareModal";
 
-const EditorHeader = () => {
-	const [docName, setDocName] = useState("Doc Name")
+const EditorHeader = ({ name } : { name: string }) => {
+	const [docName, setDocName] = useState(name);
 
 	return (
 		<header className="p-2 md:p-3 w-full bg-violet-100 fixed top-0">
@@ -43,11 +43,7 @@ const EditorHeader = () => {
 						<MdOutlineMessage size={23} />
 					</div>
 
-					{/* Sharing */}
-					<div className="flex flex-row justify-around items-center w-28 p-1 md:p-2 rounded-full cursor-pointer bg-violet-200">
-						<FaGlobeAmericas size={16} />
-						<span className="font-normal">Share</span>
-					</div>
+					<ShareModal/>
 
 					{/* Profile */}
 					<Profile />

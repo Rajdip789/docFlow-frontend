@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import dayjs from 'dayjs';
 
 import Shimmer from '../Shimmer';
@@ -8,7 +8,8 @@ import { TbCalendarSad } from "react-icons/tb";
 import { MdErrorOutline } from "react-icons/md";
 
 import useAuth from '@/hooks/useAuth';
-import { AppDataContext } from '@/context/AppdataProvider';
+import useFilteredDocs from '@/hooks/useFilteredDocs';
+import { AppDataContext } from '@/context/AppDataProvider';
 import { useGetAllDocumentsQuery } from "@/lib/react-query/queries";
 
 
@@ -16,29 +17,8 @@ const AllSaveDocuments = ({ IsSort, CreatedBy }: { IsSort: boolean, CreatedBy: s
 	const { user } = useAuth();
 	const { searchText } = useContext(AppDataContext);
 	const { isPending, isError, data } = useGetAllDocumentsQuery();
-	const [allUserDocs, setAllUserDocs] = useState<DocumentResponse[]>([]);
 
-	useEffect(() => {
-		if (!isPending && !isError && data?.data?.ownedDocuments) {
-			const docData: DocumentResponse[] = [...data.data.ownedDocuments];
-
-			let filteredDocs = docData;
-
-			IsSort ? filteredDocs.sort((t1, t2) => dayjs(t2.updatedAt).diff(dayjs(t1.updatedAt)))
-				: filteredDocs.sort((t1, t2) => t1.title.localeCompare(t2.title));
-
-			if (CreatedBy === "me") {
-				filteredDocs = filteredDocs.filter((doc) => doc.owner_id === user.id);
-			} else if (CreatedBy === "others") {
-				filteredDocs = filteredDocs.filter((doc) => doc.owner_id !== user.id);
-			}
-
-			if (searchText) filteredDocs = filteredDocs.filter((doc) => doc.title.toLowerCase().includes(searchText.toLowerCase()));
-
-			setAllUserDocs(filteredDocs);
-		}
-	}, [isPending, isError, data, IsSort, CreatedBy, searchText]);
-
+	const allUserDocs = useFilteredDocs({isPending, isError, data, IsSort, CreatedBy, searchText, user});
 
 	if (isPending) return <Shimmer />
 
@@ -67,7 +47,6 @@ const AllSaveDocuments = ({ IsSort, CreatedBy }: { IsSort: boolean, CreatedBy: s
 								Name={each.title}
 								SubTitle={dayjs(each.updatedAt).format('DD-MM-YYYY')}
 								key={0 * 10 + i}
-								isCreate={false}
 							/>
 						);
 					})

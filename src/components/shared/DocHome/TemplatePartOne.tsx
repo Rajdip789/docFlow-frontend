@@ -7,7 +7,7 @@ const TemplatePartOne = () => {
 			{
 				templateDetails[0].map((each, i) => (
 					<EachDocCard
-						DocId={"id" + i}
+						DocId={"template" + i}
 						ImgC={each.img}
 						Name={each.name}
 						SubTitle={each.subtitile}

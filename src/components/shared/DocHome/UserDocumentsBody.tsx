@@ -35,15 +35,15 @@ const UserDocumentsBody = () => {
 			}
 		};
 
-		document.addEventListener("scroll", handleScroll);
+		window.addEventListener("wheel", handleScroll);
 
 		return () => {
-			document.removeEventListener("scroll", handleScroll);
+			window.removeEventListener("wheel", handleScroll);
 		};
 	}, []);
 
 	return (
-		<div className="w-full px-2 pb-3 bg-white relative font-semibold">
+		<div className="w-full pb-3 bg-white relative font-semibold">
 			<div
 				id="saveDocumentsHeader"
 				className={ stickyVal ? "w-full border-b-5 shadow-md sticky top-14" : "w-full" }>

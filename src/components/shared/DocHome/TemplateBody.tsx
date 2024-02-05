@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 import TemplatePartOne from "./TemplatePartOne";
 import HiddenTemplate from "./HiddenTemplate";
-import { AppDataContext } from "@/context/AppdataProvider";
+import { AppDataContext } from "@/context/AppDataProvider";
 
 const TemplateBody = () => {
 	const [templateShow, setTemplateShow] = useState(true);

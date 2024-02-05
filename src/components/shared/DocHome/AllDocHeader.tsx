@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import { FaArrowLeft, FaSearch } from "react-icons/fa";
 
-import { AppDataContext } from "@/context/AppdataProvider";
-import Logo from "@/assets/logo.png";
 import Profile from "../Profile";
+import Logo from "@/assets/logo.png";
+import { AppDataContext } from "@/context/AppDataProvider";
+
 
 const AllDocHeader = () => {
 	const [isInputFocused, setIsInputFocused] = useState(false);

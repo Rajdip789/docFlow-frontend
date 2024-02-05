@@ -2,7 +2,7 @@ import { useContext } from "react";
 
 import EachDocCard from "./EachDocCard";
 import { templateDetails } from "@/assets/ConstantTemp";
-import { AppDataContext } from "@/context/AppdataProvider";
+import { AppDataContext } from "@/context/AppDataProvider";
 
 const HiddenTemplate = () => {
 	const { hiddenTempValue } = useContext(AppDataContext);

@@ -6,14 +6,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../ui/avatar"
-import { Button } from "../ui/button"
+} from "../../ui/avatar"
+import { Button } from "../../ui/button"
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "../ui/card"
+} from "../../ui/card"
 // import {
 //   Command,
 //   CommandEmpty,
@@ -29,14 +29,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog"
-import { Input } from "../ui/input"
+} from "../../ui/dialog"
+import { Input } from "../../ui/input"
 // import {
 //   Tooltip,
 //   TooltipContent,
 //   TooltipProvider,
 //   TooltipTrigger,
-// } from "../ui"
+// } from "../../ui"
 
 const users = [
   {

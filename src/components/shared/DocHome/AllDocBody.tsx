@@ -2,7 +2,7 @@ import { useContext } from "react";
 
 import TemplateBody from "./TemplateBody";
 import UserDocumentsBody from "./UserDocumentsBody";
-import { AppDataContext } from "@/context/AppdataProvider";
+import { AppDataContext } from "@/context/AppDataProvider";
 
 const AllDocBody = () => {
 	const { hiddenTempValue } = useContext(AppDataContext);
