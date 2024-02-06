@@ -1,5 +1,4 @@
-import * as React from "react"
-import { Check, Plus, Send } from "lucide-react"
+import { Send } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -31,6 +30,7 @@ import {
   DialogTitle,
 } from "../../ui/dialog"
 import { Input } from "../../ui/input"
+import { useState } from "react"
 // import {
 //   Tooltip,
 //   TooltipContent,
@@ -69,10 +69,10 @@ const users = [
 type User = (typeof users)[number]
 
 export function Chat() {
-  const [open, setOpen] = React.useState(false)
-  const [selectedUsers, setSelectedUsers] = React.useState<User[]>([])
+  const [open, setOpen] = useState(false)
+  const [selectedUsers] = useState<User[]>([])
 
-  const [messages, setMessages] = React.useState([
+  const [messages, setMessages] = useState([
     {
       role: "agent",
       content: "Hi, how can I help you today?",
@@ -90,7 +90,7 @@ export function Chat() {
       content: "I can't log in.",
     },
   ])
-  const [input, setInput] = React.useState("")
+  const [input, setInput] = useState("")
   const inputLength = input.trim().length
 
   return (

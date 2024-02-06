@@ -2,9 +2,8 @@ import { FaGlobeAmericas } from "react-icons/fa"
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 
-const ShareModal = () => {
+const ShareModal = ( { name } : { name : string} ) => {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -15,13 +14,13 @@ const ShareModal = () => {
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
-					<DialogTitle>Share document - ""</DialogTitle>
+					<DialogTitle>Share document - {name}</DialogTitle>
 					<DialogDescription>
 						Edit permissions. Click save when you're done.
 					</DialogDescription>
 				</DialogHeader>
-				<Input id="name" value="Pedro Duarte" className="col-span-3" />
-				{/* <div className="grid gap-4 py-4">
+				{/* <Input id="name" value="Pedro Duarte" className="col-span-3" />
+				<div className="grid gap-4 py-4">
 					<div className="grid grid-cols-4 items-center gap-4">
 						<Label htmlFor="name" className="text-right">
 							Name
@@ -33,7 +32,7 @@ const ShareModal = () => {
 							Username
 						</Label>
 						<Input id="username" value="@peduarte" className="col-span-3" />
-					</div>
+					</div> 
 				</div> */}
 				<DialogFooter>
 					<Button type="submit">Save changes</Button>

@@ -43,7 +43,7 @@ const EditorHeader = ({ name } : { name: string }) => {
 						<MdOutlineMessage size={23} />
 					</div>
 
-					<ShareModal/>
+					<ShareModal name = {name}/>
 
 					{/* Profile */}
 					<Profile />
