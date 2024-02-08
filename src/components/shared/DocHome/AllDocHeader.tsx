@@ -28,7 +28,7 @@ const AllDocHeader = () => {
 	}
 
 	return (
-		<header className="p-2 md:p-4 w-full  bg-white z-10 h-16 fixed top-0">
+		<header className="p-2 md:p-4 w-screen bg-white z-10 h-16 fixed top-0">
 			{
 				hiddenTempValue ? (
 					<div className="flex font-semibold items-center w-full h-full">
@@ -43,7 +43,7 @@ const AllDocHeader = () => {
 					<div className="flex items-center justify-between w-full h-full">
 
 						{/* Logo */}
-						<Link to={"/"}>
+						<Link to={"/home"}>
 							<div className="flex items-center">
 								<img src={Logo} className="w-8 h-8 md:w-12 md:h-12" alt="Logo" />
 							</div>

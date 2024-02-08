@@ -35,10 +35,10 @@ const UserDocumentsBody = () => {
 			}
 		};
 
-		window.addEventListener("wheel", handleScroll);
+		window.addEventListener("scroll", handleScroll);
 
 		return () => {
-			window.removeEventListener("wheel", handleScroll);
+			window.removeEventListener("scroll", handleScroll);
 		};
 	}, []);
 

@@ -5,7 +5,7 @@ import AppDataProvider from "@/context/AppDataProvider";
 const UserDocs = () => {
 	return (
 		<AppDataProvider>
-			<div className="h-screen w-full flex flex-col text-sm md:text-base !overflow-y-scroll">
+			<div className="h-screen w-full flex flex-col text-sm md:text-base">
 				<AllDocHeader />
 				<AllDocBody />
 			</div>
