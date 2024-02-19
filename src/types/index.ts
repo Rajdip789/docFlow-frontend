@@ -1,34 +1,34 @@
 type Iuser = {
-    id: string
-    username: string
-	email: string
-	imageUrl: string
-    accessToken: string;
-}
+	id: string;
+	username: string;
+	email: string;
+	imageUrl: string;
+	accessToken: string;
+};
 
 type IContextType = {
-    user: Iuser
-    setUser: React.Dispatch<React.SetStateAction<Iuser>>
-    isAuthenticated: boolean
-    setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
-}
+	user: Iuser;
+	setUser: React.Dispatch<React.SetStateAction<Iuser>>;
+	isAuthenticated: boolean;
+	setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-type GoogleCodeResponse =  {
+type GoogleCodeResponse = {
 	authuser: string;
-	code: string; 
+	code: string;
 	prompt: string;
 	scope: string;
-}
+};
 
 type ResponseUser = {
-	_id: string
+	_id: string;
 	username: string;
 	email: string;
 	image: string;
 	accessToken: string;
 	createdAt: string;
 	updatedAt: string;
-}
+};
 
 type CustomError = {
 	message: string;
@@ -37,7 +37,7 @@ type CustomError = {
 			message?: string;
 		};
 	};
-}
+};
 
 type DocumentResponse = {
 	_id: string;
@@ -48,14 +48,14 @@ type DocumentResponse = {
 	title: string;
 	createdAt: string;
 	updatedAt: string;
-}
+};
 
 type SaveDocCardProps = {
 	DocId: string;
 	ImgC: string;
 	Name: string;
 	SubTitle: string;
-}
+};
 
 type EachDocCardProps = {
 	DocId: string;
@@ -63,4 +63,4 @@ type EachDocCardProps = {
 	Name: string;
 	SubTitle: string;
 	isCreate: boolean;
-}
+};

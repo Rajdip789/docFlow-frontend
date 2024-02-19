@@ -15,17 +15,13 @@ const Profile = () => {
     const { user } = useAuth();
 	const logoutMutation = createLogoutMutation();
 
-	const handleLogout = () => {
-		logoutMutation.mutate();
-	}
-
 	return (
 		<div>
 			<DropdownMenu modal={false}>
 				<DropdownMenuTrigger className="rounded-full">
 					<Avatar className="hover:border-2">
 						<AvatarImage src={user.imageUrl}/>
-						<AvatarFallback className='text-violet-600 font-bold capitalize'>{user.username[0]}</AvatarFallback>
+						<AvatarFallback className='text-violet-600 font-bold capitalize'>{ user.username[0] }</AvatarFallback>
 					</Avatar>
 				</DropdownMenuTrigger>
 
@@ -43,7 +39,7 @@ const Profile = () => {
 					</DropdownMenuItem>
 					<DropdownMenuItem className="flex items-center cursor-pointer">
 						<IoSettingsOutline className="size-5 mr-2" />
-						Settings
+						Notifications
 					</DropdownMenuItem>
 
 					<DropdownMenuSeparator />
@@ -69,9 +65,9 @@ const Profile = () => {
 								<AlertDialogCancel className="hover:text-gray-800 hover:border-violet-500 text-violet-800">
 									Cancel
 								</AlertDialogCancel>
-								<AlertDialogAction onClick={() => handleLogout()} disabled={logoutMutation.isPending}>
+								<AlertDialogAction onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
 									{
-										logoutMutation.isPending?
+										logoutMutation.isPending ?
 										<>
 											<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 												<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

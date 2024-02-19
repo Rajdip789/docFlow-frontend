@@ -114,3 +114,35 @@ export const useDeleteDocumentMutation = () => {
 		}
 	});
 };
+
+export const useUpdateUserMutation = () => {
+	const { user, setUser } = useAuth();
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: (userData : { formData: FormData, UserId: string }) =>
+			axiosPrivate.put(`/user/update-account/${userData.UserId}`, userData.formData),
+
+		onSuccess: (data: any) => {
+			const userData: ResponseUser = data.data.updatedUser;
+			setUser({ ...user, username: userData.username, email: userData.email, imageUrl: userData.image })
+		}
+	});
+};
+
+export const useDeleteUserMutation = () => {
+	const navigate = useNavigate();
+	const axiosPrivate = useAxiosPrivate();
+	const { setUser, setIsAuthenticated } = useAuth();
+
+	return useMutation({
+		mutationFn: (UserId : string) =>
+			axiosPrivate.delete(`/user/delete-account/${UserId}`),
+
+		onSuccess: () => {
+			setUser({ id: "", username: "", email: "", imageUrl: "", accessToken: "" });
+			setIsAuthenticated(false);
+			navigate('/');
+		}
+	});
+};

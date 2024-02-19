@@ -1,5 +1,6 @@
 import DocumentEditor from './_root/pages/DocumentEditor';
 import Home from './_root/pages/Home';
+import ProfileSetting from './_root/pages/ProfileSettings';
 import UserDocs from './_root/pages/UserDocs';
 import AuthLayout from './auth/AuthLayout';
 import SigninForm from './auth/forms/SigninForm';
@@ -21,6 +22,7 @@ const App = () => {
 
         <Route element={<RequireAuth/>}>
           <Route path='/home' element={<UserDocs/>} />
+          <Route path='/profile' element={<ProfileSetting/>} />
           <Route path='/document/:docId' element={<DocumentEditor/>} />
         </Route>
 
