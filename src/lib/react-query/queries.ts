@@ -92,7 +92,7 @@ export const useRenameDocumentMutation = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: ({ DocId, docName }: { DocId: string, docName: string }) =>
+		mutationFn: ({ DocId, docName }: { DocId: string | undefined, docName: string }) =>
 			axiosPrivate.put(`/doc/rename-docs/${DocId}`, {title : docName}),
 
 		onSuccess: () => {

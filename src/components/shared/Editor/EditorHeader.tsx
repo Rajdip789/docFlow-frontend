@@ -7,9 +7,11 @@ import { FaClockRotateLeft } from "react-icons/fa6";
 import EditorMenu from "./EditorMenu";
 import { useState } from "react";
 import ShareModal from "./ShareModal";
+import { useRenameDocumentMutation } from "@/lib/react-query/queries";
 
-const EditorHeader = ({ name } : { name: string }) => {
+const EditorHeader = ({ name, DocId }: { name: string, DocId: string | undefined }) => {
 	const [docName, setDocName] = useState(name);
+	const renameDocumentMutation = useRenameDocumentMutation();
 
 	return (
 		<header className="p-2 md:p-3 w-full bg-violet-100 fixed top-0">
@@ -25,10 +27,15 @@ const EditorHeader = ({ name } : { name: string }) => {
 					</Link>
 
 					<div className="flex flex-col items-start justify-between">
-						<input className="px-2 bg-inherit text-xl outline-violet-500" value={docName} onChange={(e) => setDocName(e.target.value)}/>
-				
+						<input
+							className="px-2 bg-inherit text-xl outline-violet-500"
+							value={docName}
+							onChange={(e) => setDocName(e.target.value)}
+							onBlur={() => renameDocumentMutation.mutate({DocId, docName})}
+						/>
+
 						{/* Menu */}
-						<EditorMenu/>
+						<EditorMenu />
 					</div>
 				</div>
 
@@ -43,7 +50,7 @@ const EditorHeader = ({ name } : { name: string }) => {
 						<MdOutlineMessage size={23} />
 					</div>
 
-					<ShareModal name = {name}/>
+					<ShareModal name={name} />
 
 					{/* Profile */}
 					<Profile />
