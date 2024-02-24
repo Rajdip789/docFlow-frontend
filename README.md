@@ -1,30 +1,44 @@
-# React + TypeScript + Vite
+# Docflow frontend 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Installation
 
-Currently, two official plugins are available:
+To run locally on your machine, follow these steps:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Clone the repository to your local machine.
 
-## Expanding the ESLint configuration
+2. Install the required dependencies.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+cd docFlow-frontend
+npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+3. Set up environment variables.
+
+   - Create a `.env` file in the root directory.
+   - Obtain your Google OAuth client id, backend origin base url `.env` file as follows-
+
+```bash
+MONGO_URL=your_mongo_atlas_url
+VITE_BASE_URL=http://localhost:5000/api/v1
+VITE_GOOGLE_CLIENTID=your_GoogleOAuth_clientid
+```
+
+4. Run the application.
+
+```bash
+npm start
+```
+
+## Technologies Used
+
+- Vite + React + TypeScript
+- React Query
+- Quill
+- Shadcn UI
+- Tailwind CSS
+- TypeScript
+- Google OAuth
+
+---
