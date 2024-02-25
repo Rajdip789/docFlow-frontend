@@ -14,8 +14,8 @@ const EditorHeader = ({ name, DocId }: { name: string, DocId: string | undefined
 	const renameDocumentMutation = useRenameDocumentMutation();
 
 	return (
-		<header className="p-2 md:p-3 w-full bg-violet-100 fixed top-0">
-			<div className="flex items-center justify-between w-full h-full">
+		<header className="p-2 md:p-3 w-full bg-violet-100 fixed top-0 z-10">
+			<div className="flex items-center justify-between w-full h-full px-2">
 
 				{/* Left portion */}
 				<div className="flex items-center justify-around gap-2">
