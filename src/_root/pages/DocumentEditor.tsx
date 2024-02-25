@@ -58,7 +58,7 @@ const DocumentEditor = () => {
 	}, [])
 
 	return (
-		<div className='w-full bg-violet-100 !overflow-y-scroll'>
+		<div className='w-full min-w-[768px] bg-violet-100 !overflow-y-scroll'>
 			<EditorHeader name = { location?.state?.Name || "Untitled Doc" } DocId = { docId }/>
 			<div className='mt-[4.5rem] bg-violet-100'>
 				<div className='container' ref={wrapperRef}></div>
