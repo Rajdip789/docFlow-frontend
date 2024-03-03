@@ -16,8 +16,8 @@ const useFilteredDocs = ( {isPending, isError, data, IsSort, CreatedBy, searchTe
 	const [allUserDocs, setAllUserDocs] = useState<DocumentResponse[]>([]);
 
 	useEffect(() => {
-		if (!isPending && !isError && data?.data?.ownedDocuments) {
-			const docData: DocumentResponse[] = [...data.data.ownedDocuments];
+		if (!isPending && !isError && data?.data?.allDocuments) {
+			const docData: DocumentResponse[] = [...data.data.allDocuments];
 
 			let filteredDocs = docData;
 

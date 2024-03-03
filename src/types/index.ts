@@ -41,9 +41,6 @@ type CustomError = {
 
 type DocumentResponse = {
 	_id: string;
-	chat_id: string;
-	content: string;
-	mail_access_id: string;
 	owner_id: string;
 	title: string;
 	createdAt: string;
@@ -64,3 +61,14 @@ type EachDocCardProps = {
 	SubTitle: string;
 	isCreate: boolean;
 };
+
+interface EmailEntry {
+	email: string;
+	username: string;
+}
+interface EmailAccessEntry {
+	_id?: string
+	email: string;
+	name: string;
+	type: string;
+}

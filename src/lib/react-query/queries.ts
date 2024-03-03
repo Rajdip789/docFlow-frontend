@@ -146,3 +146,40 @@ export const useDeleteUserMutation = () => {
 		}
 	});
 };
+
+export const useGetDocumentInfoQuery = (DocId : string | undefined) => {
+	const axiosPrivate = useAxiosPrivate();
+
+	return useQuery({
+		queryKey: ['getDocInfo'],
+		queryFn: () => axiosPrivate.get(`/doc/get-docs-info/${DocId}`),
+		enabled: false,
+	});
+};
+
+export const useAddEmailAccessMutation = () => {
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: ({ DocId, shareEmail } : { DocId : string | undefined, shareEmail: EmailAccessEntry[] }) =>
+			axiosPrivate.put('/doc/add-email-access', { DocId, shareEmail }),
+	});
+};
+
+export const useUpdateEmailAccessMutation = () => {
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: ({ DocId, updatedAccessData } : { DocId : string | undefined, updatedAccessData: EmailAccessEntry[] }) =>
+			axiosPrivate.put('/doc/update-email-access', { DocId, updatedAccessData }),
+	});
+};
+
+export const useAddLinkAccessMutation = () => {
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: ({ DocId, linkShare, linkShareType } : { DocId : string | undefined , linkShare: boolean, linkShareType: "view" | "edit"}) =>
+			axiosPrivate.put('/doc/add-link-access', { DocId, linkShare, linkShareType }),
+	});
+};

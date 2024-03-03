@@ -1,51 +1,81 @@
-import React, { useState, ChangeEvent, KeyboardEvent, useRef, useCallback } from "react";
+import React, { useState, ChangeEvent, KeyboardEvent, useRef, useCallback, useEffect } from "react";
 
 import { RxCross1 } from "react-icons/rx";
 import { CgDanger } from "react-icons/cg";
 import { GrValidate } from "react-icons/gr";
-import { MdOutlineLink } from "react-icons/md";
+import { MdClose, MdOutlineLink } from "react-icons/md";
 
 import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 import useAuth from "@/hooks/useAuth";
+import { useAddEmailAccessMutation, useAddLinkAccessMutation, useGetDocumentInfoQuery, useUpdateEmailAccessMutation } from "@/lib/react-query/queries";
 
-
-interface EmailEntry {
-	email: string;
-	name: string;
+interface Data {
+	docs: {
+		email_access: EmailAccessEntry[],
+		link_access: { is_active: boolean, access_type: 'view' | 'edit', link: string },
+		title: string
+	},
+	users: { username: string, email: string }[];
 }
-interface DemoEmEntry {
-	email: string;
-	name: string;
-	type: string;
-}
-const databaseEmails: EmailEntry[] = [
-	{ email: "souvik@email.com", name: "Souvik Maji" },
-	{ email: "rajdip@mail.com", name: "Rajdip Pal" },
-	{ email: "kousik@edu.in", name: "Kousik" },
-];
 
-const accessedEmailsDatabase: DemoEmEntry[] = [
-	{ email: "rajdip@mail.com", name: "Rajdip Pal", type: "viewer" },
-	{ email: "kousik@edu.in", name: "Kousik", type: "editor" },
-];
-
-const ShareModal = ({ name }: { name: string }) => {
+const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
+	//Context and queries
 	const { user } = useAuth();
+	const addLinkAccessMutation = useAddLinkAccessMutation();
+	const addEmailAccessMutation = useAddEmailAccessMutation();
+	const updateEmailAccessMutation = useUpdateEmailAccessMutation();
+	const { isPending, data, refetch } = useGetDocumentInfoQuery(DocId);
 
-	const [inputFocus, setInputFocus] = useState(false);
-	const [inputValue, setInputValue] = useState<string>("");
+	const [docName, setDocName] = useState("");
+
+	//Email share -- inputs, data
 	const inputRef = useRef<HTMLInputElement>(null);
 	const closeRef = useRef<HTMLButtonElement>(null);
-
-	const [animation, setAnimation] = useState(true);
-	const [isRestrict, setIsRestrict] = useState(true);
-
-	const [shareEmail, setShareEmail] = useState<EmailEntry[]>([]);
-	const [accessedEmails, setAccessedEmails] = useState<DemoEmEntry[]>([]);
+	const [inputFocus, setInputFocus] = useState(false);
+	const [inputValue, setInputValue] = useState<string>("");
 	const [shareSubmit, setShareSubmit] = useState("");
+	const [emailShareType, setEmailShareType] = useState<'view' | 'edit'>("view");
+	const [shareEmail, setShareEmail] = useState<EmailAccessEntry[]>([]); //Input emails
+
+	const [accessedEmails, setAccessedEmails] = useState<EmailAccessEntry[]>([]); //Already shared
+
+	//Database records
+	const [databaseEmails, setDatabaseEmails] = useState<EmailEntry[]>([]);
+	const [accessedEmailsDatabase, setAccessedEmailsDatabase] = useState<EmailAccessEntry[]>([]);
+
+	//Link share
+	const [link, setLink] = useState('');
+	const [linkShare, setLinkShare] = useState(false);
+	const [linkShareType, setLinkShareType] = useState<'view' | 'edit'>('view');
+	const [copyText, setCopyText] = useState("");
+
+	//Load data for dialog
+	useEffect(() => {
+		if (!isPending && data?.data?.docs && data?.data?.users) {
+			const { docs, users } = data?.data as Data;
+			const { title, email_access } = docs
+			const { is_active, access_type, link } = docs?.link_access;
+
+			setAccessedEmails(email_access);
+			setAccessedEmailsDatabase(email_access);
+			setDatabaseEmails(users);
+			setDocName(title);
+
+			setLinkShareType(access_type);
+			setLinkShare(is_active);
+			setLink(link);
+		}
+
+	}, [isPending, data])
+
+
+	/**  
+	 * Events for share input field   
+	 **/
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
 		if (
@@ -57,10 +87,12 @@ const ShareModal = ({ name }: { name: string }) => {
 				/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 			)
 				? databaseEmails.find((entry) => entry.email === inputValue)
-					? databaseEmails.find((entry) => entry.email === inputValue)?.name
+					? !accessedEmailsDatabase.find((entry) => entry.email === inputValue)
+						? databaseEmails.find((entry) => entry.email === inputValue)?.username
+						: "User already have access"
 					: "No DocFlow Account Found"
 				: "Invalid Email";
-			const data: EmailEntry = { email: inputValue, name: type || "" };
+			const data: EmailAccessEntry = { email: inputValue, name: type || "", type: emailShareType };
 			setShareEmail([...shareEmail, data]);
 			setInputValue("");
 		}
@@ -90,7 +122,8 @@ const ShareModal = ({ name }: { name: string }) => {
 		const hasInvalidEntries = shareEmail.some(
 			(entry) =>
 				entry.name === "Invalid Email" ||
-				entry.name === "No DocFlow Account Found"
+				entry.name === "No DocFlow Account Found" ||
+				entry.name === "User already have access"
 		);
 
 		if (hasInvalidEntries) {
@@ -101,14 +134,30 @@ const ShareModal = ({ name }: { name: string }) => {
 				setShareSubmit("");
 			}, 2000);
 		} else {
+			addEmailAccessMutation.mutate({ DocId, shareEmail });
 			setShareEmail([]);
+			setEmailShareType("view");
 			setInputValue("");
 			closeRef.current?.click();
 		}
 	};
 
+	/**  
+	 * Events for done/submit button    
+	 **/
+
 	const handleSubmit = () => {
-		setIsRestrict(true);
+		let n1 = accessedEmailsDatabase.length, n2 = accessedEmails.length;
+		let isModified = false;
+
+		for (let index = 0; index < n1; index++) {
+			if (index >= n2  || accessedEmailsDatabase[index].type !== accessedEmails[index].type) {
+				isModified = true;
+				break;
+			}
+		}
+
+		isModified && updateEmailAccessMutation.mutate({ DocId, updatedAccessData: accessedEmails });
 	}
 
 	return (
@@ -116,30 +165,29 @@ const ShareModal = ({ name }: { name: string }) => {
 			<AlertDialog>
 				<AlertDialogTrigger
 					asChild
-					onClick={() => {
-						setTimeout(() => {
-							setAnimation(false);
-							setAccessedEmails(accessedEmailsDatabase);
-						}, 2000);
-					}}>
+					onClick={() => refetch()}>
 					<Button variant="default" className="py-2 px-6 h-fit w-fit">
 						Share
 					</Button>
 				</AlertDialogTrigger>
-				<AlertDialogContent className="md:w-2/3 min-h-40">
-					{animation ? (
+				<AlertDialogContent className="md:w-2/3 min-h-40 rounded-md">
+					{isPending ? (
 						<div className="flex h-full w-full justify-center items-center">
 							<div className="animate-spin rounded-full h-8 w-8 mr-4 border-t-2 border-violet-600 border-solid"></div>
 							Loading...
 						</div>
 					) : (
 						<AlertDialogHeader className="text-left">
-							<AlertDialogTitle>Share '{name}'</AlertDialogTitle>
+							<AlertDialogTitle className="flex justify-between items-center pb-1 text-xl">
+								Share '{docName}'
+								<AlertDialogCancel className="py-0 px-1 border-none h-8 hover:bg-slate-100"><MdClose size={20} /></AlertDialogCancel>
+							</AlertDialogTitle>
+
 							<AlertDialogDescription>
 								<div className="flex justify-between mb-2">
 									<div
 										className={
-											"flex justify-start rounded-sm flex-wrap flex-grow border-2 p-2 overflow-y-auto max-h-24 " +
+											"flex justify-start rounded-sm flex-wrap flex-grow border-2 p-2 cursor-text overflow-y-auto max-h-24 " +
 											(inputFocus
 												? "border-violet-700 "
 												: "border-black-300 ") +
@@ -153,9 +201,15 @@ const ShareModal = ({ name }: { name: string }) => {
 												<HoverCard>
 													{eachmail.name !== "Invalid Email" ? (
 														eachmail.name !== "No DocFlow Account Found" ? (
-															<HoverCardTrigger className="p-1 mr-1 rounded-full bg-green-600 text-white">
-																<GrValidate />
-															</HoverCardTrigger>
+															eachmail.name !== "User already have access" ? (
+																<HoverCardTrigger className="p-1 mr-1 rounded-full bg-green-600 text-white">
+																	<GrValidate />
+																</HoverCardTrigger>
+															) : (
+																<HoverCardTrigger className="p-1 mr-1 rounded-full bg-gray-600 text-white">
+																	<CgDanger />
+																</HoverCardTrigger>
+															)
 														) : (
 															<HoverCardTrigger className="p-1 mr-1 rounded-full bg-yellow-600 text-white">
 																<CgDanger />
@@ -198,17 +252,25 @@ const ShareModal = ({ name }: { name: string }) => {
 										/>
 									</div>
 
-									<Select>
+									<Select
+										onValueChange={(value: 'view' | 'edit') => {
+											setEmailShareType(value);
+											setShareEmail((prevEmails) =>
+												prevEmails.map((email) => ({ ...email, type: value }))
+											);
+										}}
+									>
 										<SelectTrigger
 											className={
 												(shareEmail.length ? "w-fit" : "hidden") +
 												" h-fit  p-2 focus:ring-transparent border-2 border-violet-300"
-											}>
+											}
+										>
 											<SelectValue placeholder="viewer" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="viewer">Viewer </SelectItem>
-											<SelectItem value="editor">Editor </SelectItem>
+											<SelectItem value="view">Viewer </SelectItem>
+											<SelectItem value="edit">Editor </SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -220,26 +282,26 @@ const ShareModal = ({ name }: { name: string }) => {
 												setShareEmail([]);
 											}}
 											ref={closeRef}
-											className="border-2 border-red-600 text-red-600 bg-white hover:text-white hover:bg-red-600">
-											Close
+											className=" text-violet-600 hover:text-violet-600 bg-white hover:bg-violet-100">
+											Cancel
 										</AlertDialogCancel>
 										<Button
 											onClick={handleShareButtonClick}
-											className="border-2 border-violet-600 text-violet-600 bg-white hover:text-white">
+											className="px-5">
 											Share
 										</Button>
 									</div>
 								) : (
 									<div>
 										<div className="my-2">
-											<div className="  text-gray-700 font-bold my-2">
+											<div className="  text-gray-700 font-bold text-base my-2">
 												People with access
 											</div>
 											<div
 												tabIndex={0}
-												className="flex justify-between items-center h-fit p-2 rounded-sm hover:bg-violet-200">
+												className="text-black flex justify-between items-center h-fit p-2 rounded-sm hover:bg-violet-200">
 												<div className="text-left">
-													<div className="text-xs font-bold">{user.username}(You)</div>
+													<div className="text-xs font-bold">{user.username} (You)</div>
 													<div className="font-semibold text-xs">
 														{user.email}
 													</div>
@@ -253,10 +315,10 @@ const ShareModal = ({ name }: { name: string }) => {
 													<div
 														key={i + eachmail.email}
 														tabIndex={0}
-														className="flex justify-between items-center h-fit p-2 rounded-sm focus:bg-violet-200 hover:bg-violet-200">
+														className="text-black flex justify-between items-center h-fit p-2 rounded-sm focus:bg-violet-200 hover:bg-violet-200">
 														<div className="text-left">
-															<div className="text-xs">{eachmail.name}</div>
-															<div className="font-semibold text-xs">
+															<div className="text-xs font-semibold">{eachmail.name}</div>
+															<div className="text-[0.8rem]">
 																{eachmail.email}
 															</div>
 														</div>
@@ -264,19 +326,17 @@ const ShareModal = ({ name }: { name: string }) => {
 															value={eachmail.type}
 															onValueChange={(val) => {
 																setAccessedEmails((prevEmails) =>
-																	prevEmails.map((email, index) =>
-																		index === i
-																			? { ...email, type: val }
-																			: email
-																	)
+																	val === 'remove'
+																		? prevEmails.filter((_, index) => index !== i)
+																		: prevEmails.map((email, index) => (index === i ? { ...email, type: val } : email))
 																);
 															}}>
 															<SelectTrigger className="w-fit h-fit  p-2  bg-transparent border-none focus:ring-transparent  hover:bg-violet-300">
 																<SelectValue placeholder="viewer" />
 															</SelectTrigger>
 															<SelectContent>
-																<SelectItem className="cursor-pointer" value="viewer">Viewer </SelectItem>
-																<SelectItem className="cursor-pointer" value="editor">Editor </SelectItem>
+																<SelectItem className="cursor-pointer" value="view">Viewer </SelectItem>
+																<SelectItem className="cursor-pointer" value="edit">Editor </SelectItem>
 																<SelectItem className="cursor-pointer" value="remove">Remove access </SelectItem>
 															</SelectContent>
 														</Select>
@@ -285,21 +345,33 @@ const ShareModal = ({ name }: { name: string }) => {
 											})}
 										</div>
 										<div className="my-2">
-											<div className=" text-gray-700 font-bold my-2">
+											<div className=" text-gray-700 font-bold text-base my-2">
 												General access
 											</div>
 											<div
 												tabIndex={0}
-												className="flex justify-between items-center h-fit p-2 rounded-sm focus:bg-violet-200 hover:bg-violet-200">
+												className="text-black flex justify-between items-center h-fit p-2 rounded-sm focus:bg-violet-200 hover:bg-violet-200">
 												<div className="text-left">
 													<div className="text-xs">
-														<Select onValueChange={() => setIsRestrict(prev => !prev)}>
+														<Select
+															value={linkShare ? "anyone" : "private"}
+															onValueChange={(value) => {
+																setLinkShare(value === 'anyone');
+																addLinkAccessMutation.mutate({ DocId, linkShare: value === 'anyone', linkShareType });
+																if (addLinkAccessMutation.isSuccess) {
+																	setCopyText("Access updated!");
+																	setTimeout(() => {
+																		setCopyText("");
+																	}, 2000);
+																}
+															}
+															}>
 															<SelectTrigger className="w-fit rounded-none h-fit p-1  bg-transparent border-none focus:ring-transparent  hover:bg-violet-300">
-																<SelectValue placeholder="Restricted" />
+																<SelectValue placeholder="private" />
 															</SelectTrigger>
 															<SelectContent>
-																<SelectItem className="cursor-pointer" value="restrict">
-																	Restricted{" "}
+																<SelectItem className="cursor-pointer" value="private">
+																	Private{" "}
 																</SelectItem>
 																<SelectItem className="cursor-pointer" value="anyone">
 																	Anyone can with the link{" "}
@@ -309,29 +381,53 @@ const ShareModal = ({ name }: { name: string }) => {
 													</div>
 													<div className="font-semibold text-xs ml-1">
 														{
-															isRestrict ?
-																<>Only people with access can open with the link</> :
-																<>Anyone on the Internet with the link can view</>
+															linkShare ?
+																<>Anyone on the Internet with the link can {linkShareType}</> :
+																<>No one can view with the link!</>
 														}
 													</div>
 												</div>
 												{
-													!isRestrict &&
-													<Select>
-														<SelectTrigger className="w-fit h-fit  p-2  bg-transparent border-none focus:ring-transparent  hover:bg-violet-300">
-															<SelectValue placeholder="viewer" />
-														</SelectTrigger>
-														<SelectContent>
-															<SelectItem className="cursor-pointer" value="viewer">Viewer </SelectItem>
-															<SelectItem className="cursor-pointer" value="editor">Editor </SelectItem>
-														</SelectContent>
-													</Select>
+													addLinkAccessMutation.isPending ?
+														<div className="italic">Updating...</div> :
+														linkShare &&
+														<Select
+															value={linkShareType}
+															onValueChange={(value: 'view' | 'edit') => {
+																setLinkShareType(value);
+																addLinkAccessMutation.mutate({ DocId, linkShare, linkShareType: value })
+																if (addLinkAccessMutation.isSuccess) {
+																	setCopyText("Access updated!");
+																	setTimeout(() => {
+																		setCopyText("");
+																	}, 2000);
+																}
+															}
+															}>
+															<SelectTrigger className="w-fit h-fit  p-2  bg-transparent border-none focus:ring-transparent  hover:bg-violet-300">
+																<SelectValue placeholder="view" />
+															</SelectTrigger>
+															<SelectContent>
+																<SelectItem className="cursor-pointer" value="view">Viewer </SelectItem>
+																<SelectItem className="cursor-pointer" value="edit">Editor </SelectItem>
+															</SelectContent>
+														</Select>
 
 												}
 											</div>
 										</div>
 										<div className="flex items-center justify-between h-fit mt-10">
-											<Button className="px-3 text-gray-600 bg-violet-200 hover:bg-violet-300">
+											<Button
+												className="px-2 text-gray-600 bg-violet-200 hover:bg-violet-300"
+												onClick={() => {
+													navigator.clipboard.writeText(link);
+													setCopyText("Link copied!");
+													setTimeout(() => {
+														setCopyText("");
+													}, 2000);
+												}
+												}
+											>
 												<MdOutlineLink className="text-xl mr-2" /> Copy Link
 											</Button>
 											<AlertDialogAction className="border-2 px-7 border-violet-600" onClick={() => handleSubmit()}>
@@ -341,8 +437,13 @@ const ShareModal = ({ name }: { name: string }) => {
 									</div>
 								)}
 								{shareSubmit === "" ? null : (
-									<div className="absolute bottom-0 left-1/2 text-center p-2 -translate-x-1/2 w-1/2 bg-black text-white font-semibold">
+									<div className="absolute bottom-0 left-1/2 text-center p-2 -translate-x-1/2 w-1/2 bg-slate-900 text-white font-semibold rounded-t-sm">
 										{shareSubmit}
+									</div>
+								)}
+								{copyText === "" ? null : (
+									<div className="absolute bottom-0 left-1/2 text-center p-2 -translate-x-1/2 w-1/3 bg-slate-900 text-white font-semibold rounded-t-sm">
+										{copyText}
 									</div>
 								)}
 							</AlertDialogDescription>
@@ -350,7 +451,7 @@ const ShareModal = ({ name }: { name: string }) => {
 					)}
 				</AlertDialogContent>
 			</AlertDialog>
-		</div>
+		</div >
 	);
 };
 
