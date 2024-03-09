@@ -17,12 +17,14 @@ interface Data {
 	docs: {
 		email_access: EmailAccessEntry[],
 		link_access: { is_active: boolean, access_type: 'view' | 'edit', link: string },
-		title: string
+		title: string,
+		owner_id: string,
+		owner: Iuser
 	},
 	users: { username: string, email: string }[];
 }
 
-const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
+const ShareModal = ({ DocId }: { DocId: string }) => {
 	//Context and queries
 	const { user } = useAuth();
 	const addLinkAccessMutation = useAddLinkAccessMutation();
@@ -31,6 +33,10 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 	const { isPending, data, refetch } = useGetDocumentInfoQuery(DocId);
 
 	const [docName, setDocName] = useState("");
+	const [ownerName, setOwnerName] = useState("");
+	const [ownerMail, setOwnerMail] = useState("");
+	const [ownerId, setOwnerId] = useState("");
+	const [isAnimation, setIsAnimation] = useState(false);
 
 	//Email share -- inputs, data
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -57,21 +63,25 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 	useEffect(() => {
 		if (!isPending && data?.data?.docs && data?.data?.users) {
 			const { docs, users } = data?.data as Data;
-			const { title, email_access } = docs
+			const { owner_id, title, email_access, owner } = docs
 			const { is_active, access_type, link } = docs?.link_access;
 
 			setAccessedEmails(email_access);
 			setAccessedEmailsDatabase(email_access);
 			setDatabaseEmails(users);
+
 			setDocName(title);
+			setOwnerId(owner_id);
+			setOwnerMail(owner.email);
+			setOwnerName(owner.username);
 
 			setLinkShareType(access_type);
 			setLinkShare(is_active);
 			setLink(link);
+			setIsAnimation(false);
 		}
 
-	}, [isPending, data])
-
+	}, [isPending, data, isAnimation])
 
 	/**  
 	 * Events for share input field   
@@ -151,7 +161,7 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 		let isModified = false;
 
 		for (let index = 0; index < n1; index++) {
-			if (index >= n2  || accessedEmailsDatabase[index].type !== accessedEmails[index].type) {
+			if (index >= n2 || accessedEmailsDatabase[index].type !== accessedEmails[index].type) {
 				isModified = true;
 				break;
 			}
@@ -165,13 +175,17 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 			<AlertDialog>
 				<AlertDialogTrigger
 					asChild
-					onClick={() => refetch()}>
+					onClick={() => {
+						setIsAnimation(true);
+						refetch();
+					}}
+				>
 					<Button variant="default" className="py-2 px-6 h-fit w-fit">
 						Share
 					</Button>
 				</AlertDialogTrigger>
 				<AlertDialogContent className="md:w-2/3 min-h-40 rounded-md">
-					{isPending ? (
+					{isPending || isAnimation ? (
 						<div className="flex h-full w-full justify-center items-center">
 							<div className="animate-spin rounded-full h-8 w-8 mr-4 border-t-2 border-violet-600 border-solid"></div>
 							Loading...
@@ -184,96 +198,98 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 							</AlertDialogTitle>
 
 							<AlertDialogDescription>
-								<div className="flex justify-between mb-2">
-									<div
-										className={
-											"flex justify-start rounded-sm flex-wrap flex-grow border-2 p-2 cursor-text overflow-y-auto max-h-24 " +
-											(inputFocus
-												? "border-violet-700 "
-												: "border-black-300 ") +
-											(shareEmail.length ? "mr-3" : "mr-0 w-full")
-										}
-										onClick={handleClickOnInputParent}>
-										{shareEmail.map((eachmail) => (
-											<div
-												key={eachmail.email}
-												className="flex m-1 py-1 px-2 items-center  bg-violet-100 rounded-md w-fit h-fit">
-												<HoverCard>
-													{eachmail.name !== "Invalid Email" ? (
-														eachmail.name !== "No DocFlow Account Found" ? (
-															eachmail.name !== "User already have access" ? (
-																<HoverCardTrigger className="p-1 mr-1 rounded-full bg-green-600 text-white">
-																	<GrValidate />
-																</HoverCardTrigger>
+								{
+									(user.id === ownerId) && <div className="flex justify-between mb-2">
+										<div
+											className={
+												"flex justify-start rounded-sm flex-wrap flex-grow border-2 p-2 cursor-text overflow-y-auto max-h-24 " +
+												(inputFocus
+													? "border-violet-700 "
+													: "border-black-300 ") +
+												(shareEmail.length ? "mr-3" : "mr-0 w-full")
+											}
+											onClick={handleClickOnInputParent}>
+											{shareEmail.map((eachmail) => (
+												<div
+													key={eachmail.email}
+													className="flex m-1 py-1 px-2 items-center  bg-violet-100 rounded-md w-fit h-fit">
+													<HoverCard>
+														{eachmail.name !== "Invalid Email" ? (
+															eachmail.name !== "No DocFlow Account Found" ? (
+																eachmail.name !== "User already have access" ? (
+																	<HoverCardTrigger className="p-1 mr-1 rounded-full bg-green-600 text-white">
+																		<GrValidate />
+																	</HoverCardTrigger>
+																) : (
+																	<HoverCardTrigger className="p-1 mr-1 rounded-full bg-gray-600 text-white">
+																		<CgDanger />
+																	</HoverCardTrigger>
+																)
 															) : (
-																<HoverCardTrigger className="p-1 mr-1 rounded-full bg-gray-600 text-white">
+																<HoverCardTrigger className="p-1 mr-1 rounded-full bg-yellow-600 text-white">
 																	<CgDanger />
 																</HoverCardTrigger>
 															)
 														) : (
-															<HoverCardTrigger className="p-1 mr-1 rounded-full bg-yellow-600 text-white">
+															<HoverCardTrigger className="p-1 mr-1 rounded-full bg-red-600 text-white">
 																<CgDanger />
 															</HoverCardTrigger>
-														)
-													) : (
-														<HoverCardTrigger className="p-1 mr-1 rounded-full bg-red-600 text-white">
-															<CgDanger />
-														</HoverCardTrigger>
-													)}
-													<HoverCardContent className="w-fit py-1 px-2 h-fit bg-violet-500 text-white font-semibold">
-														{eachmail.name}
-													</HoverCardContent>
-												</HoverCard>
-												<div className="mr-1 text-xs font-medium">
-													{eachmail.email.length > 25
-														? eachmail.email.slice(0, 22) + "..."
-														: eachmail.email}
+														)}
+														<HoverCardContent className="w-fit py-1 px-2 h-fit bg-violet-500 text-white font-semibold">
+															{eachmail.name}
+														</HoverCardContent>
+													</HoverCard>
+													<div className="mr-1 text-xs font-medium">
+														{eachmail.email.length > 25
+															? eachmail.email.slice(0, 22) + "..."
+															: eachmail.email}
+													</div>
+													<div
+														className="cursor-pointer p-1 hover:bg-violet-200 rounded-full"
+														onClick={(e) => handleDelete(eachmail.email, e)}>
+														<RxCross1 />
+													</div>
 												</div>
-												<div
-													className="cursor-pointer p-1 hover:bg-violet-200 rounded-full"
-													onClick={(e) => handleDelete(eachmail.email, e)}>
-													<RxCross1 />
-												</div>
-											</div>
-										))}
-										<input
-											type="text"
-											ref={inputRef}
-											className="border-none outline-none "
-											onFocus={() => {
-												setInputFocus(true);
-											}}
-											onBlur={() => {
-												setInputFocus(false);
-											}}
-											onKeyDown={handleKeyDown}
-											onChange={handleChange}
-											value={inputValue}
-										/>
-									</div>
+											))}
+											<input
+												type="text"
+												ref={inputRef}
+												className="border-none outline-none "
+												onFocus={() => {
+													setInputFocus(true);
+												}}
+												onBlur={() => {
+													setInputFocus(false);
+												}}
+												onKeyDown={handleKeyDown}
+												onChange={handleChange}
+												value={inputValue}
+											/>
+										</div>
 
-									<Select
-										onValueChange={(value: 'view' | 'edit') => {
-											setEmailShareType(value);
-											setShareEmail((prevEmails) =>
-												prevEmails.map((email) => ({ ...email, type: value }))
-											);
-										}}
-									>
-										<SelectTrigger
-											className={
-												(shareEmail.length ? "w-fit" : "hidden") +
-												" h-fit  p-2 focus:ring-transparent border-2 border-violet-300"
-											}
+										<Select
+											onValueChange={(value: 'view' | 'edit') => {
+												setEmailShareType(value);
+												setShareEmail((prevEmails) =>
+													prevEmails.map((email) => ({ ...email, type: value }))
+												);
+											}}
 										>
-											<SelectValue placeholder="viewer" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="view">Viewer </SelectItem>
-											<SelectItem value="edit">Editor </SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
+											<SelectTrigger
+												className={
+													(shareEmail.length ? "w-fit" : "hidden") +
+													" h-fit  p-2 focus:ring-transparent border-2 border-violet-300"
+												}
+											>
+												<SelectValue placeholder="viewer" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="view">Viewer </SelectItem>
+												<SelectItem value="edit">Editor </SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+								}
 
 								{shareEmail.length > 0 ? (
 									<div className="flex items-center justify-between h-fit my-10">
@@ -301,48 +317,50 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 												tabIndex={0}
 												className="text-black flex justify-between items-center h-fit p-2 rounded-sm hover:bg-violet-200">
 												<div className="text-left">
-													<div className="text-xs font-bold">{user.username} (You)</div>
+													<div className="text-xs font-bold">{ownerName} (You)</div>
 													<div className="font-semibold text-xs">
-														{user.email}
+														{ownerMail}
 													</div>
 												</div>
 												<div className="text-gray-500 p-1 rounded-sm">
 													Owner
 												</div>
 											</div>
-											{accessedEmails.map((eachmail, i) => {
-												return (
-													<div
-														key={i + eachmail.email}
-														tabIndex={0}
-														className="text-black flex justify-between items-center h-fit p-2 rounded-sm focus:bg-violet-200 hover:bg-violet-200">
-														<div className="text-left">
-															<div className="text-xs font-semibold">{eachmail.name}</div>
-															<div className="text-[0.8rem]">
-																{eachmail.email}
+											{
+												(user.id === ownerId) && accessedEmails.map((eachmail, i) => {
+													return (
+														<div
+															key={i + eachmail.email}
+															tabIndex={0}
+															className="text-black flex justify-between items-center h-fit p-2 rounded-sm focus:bg-violet-200 hover:bg-violet-200">
+															<div className="text-left">
+																<div className="text-xs font-semibold">{eachmail.name}</div>
+																<div className="text-[0.8rem]">
+																	{eachmail.email}
+																</div>
 															</div>
+															<Select
+																value={eachmail.type}
+																onValueChange={(val) => {
+																	setAccessedEmails((prevEmails) =>
+																		val === 'remove'
+																			? prevEmails.filter((_, index) => index !== i)
+																			: prevEmails.map((email, index) => (index === i ? { ...email, type: val } : email))
+																	);
+																}}>
+																<SelectTrigger className="w-fit h-fit  p-2  bg-transparent border-none focus:ring-transparent  hover:bg-violet-300">
+																	<SelectValue placeholder="viewer" />
+																</SelectTrigger>
+																<SelectContent>
+																	<SelectItem className="cursor-pointer" value="view">Viewer </SelectItem>
+																	<SelectItem className="cursor-pointer" value="edit">Editor </SelectItem>
+																	<SelectItem className="cursor-pointer" value="remove">Remove access </SelectItem>
+																</SelectContent>
+															</Select>
 														</div>
-														<Select
-															value={eachmail.type}
-															onValueChange={(val) => {
-																setAccessedEmails((prevEmails) =>
-																	val === 'remove'
-																		? prevEmails.filter((_, index) => index !== i)
-																		: prevEmails.map((email, index) => (index === i ? { ...email, type: val } : email))
-																);
-															}}>
-															<SelectTrigger className="w-fit h-fit  p-2  bg-transparent border-none focus:ring-transparent  hover:bg-violet-300">
-																<SelectValue placeholder="viewer" />
-															</SelectTrigger>
-															<SelectContent>
-																<SelectItem className="cursor-pointer" value="view">Viewer </SelectItem>
-																<SelectItem className="cursor-pointer" value="edit">Editor </SelectItem>
-																<SelectItem className="cursor-pointer" value="remove">Remove access </SelectItem>
-															</SelectContent>
-														</Select>
-													</div>
-												);
-											})}
+													);
+												})
+											}
 										</div>
 										<div className="my-2">
 											<div className=" text-gray-700 font-bold text-base my-2">
@@ -354,6 +372,7 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 												<div className="text-left">
 													<div className="text-xs">
 														<Select
+															disabled={!(user.id === ownerId)}
 															value={linkShare ? "anyone" : "private"}
 															onValueChange={(value) => {
 																setLinkShare(value === 'anyone');
@@ -392,6 +411,7 @@ const ShareModal = ({ DocId }: { DocId: string | undefined }) => {
 														<div className="italic">Updating...</div> :
 														linkShare &&
 														<Select
+															disabled={!(user.id === ownerId)}
 															value={linkShareType}
 															onValueChange={(value: 'view' | 'edit') => {
 																setLinkShareType(value);

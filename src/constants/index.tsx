@@ -1,4 +1,4 @@
-export const SAVE_INTERVAL_MS = 10000;
+export const SAVE_INTERVAL_MS = 5000;
 
 export const toolbar = [
 	["bold", "italic", "underline", "strike"],

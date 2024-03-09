@@ -92,7 +92,7 @@ export const useRenameDocumentMutation = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: ({ DocId, docName }: { DocId: string | undefined, docName: string }) =>
+		mutationFn: ({ DocId, docName }: { DocId: string, docName: string }) =>
 			axiosPrivate.put(`/doc/rename-docs/${DocId}`, {title : docName}),
 
 		onSuccess: () => {
@@ -147,7 +147,23 @@ export const useDeleteUserMutation = () => {
 	});
 };
 
-export const useGetDocumentInfoQuery = (DocId : string | undefined) => {
+export const createDocumentMutation = (index: Number) => {
+	const { user } = useAuth();
+	const navigate = useNavigate();
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: () =>
+			axiosPrivate.post('/doc/create-docs', { userId: user.id }),
+
+		onSuccess: (data) => {
+			const docs = data?.data?.newDoc;
+			navigate(`/document/${docs._id}`, { state: { Name: docs.title, index } });
+		}
+	});
+};
+
+export const useGetDocumentInfoQuery = (DocId : string) => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useQuery({
@@ -157,11 +173,21 @@ export const useGetDocumentInfoQuery = (DocId : string | undefined) => {
 	});
 };
 
+export const useGetDocumentQuery = (DocId : string) => {
+	const axiosPrivate = useAxiosPrivate();
+
+	return useQuery({
+		queryKey: ['getDoc'],
+		queryFn: () => axiosPrivate.get(`/doc/get-docs-content/${DocId}`),
+		retry: 1,
+	});
+};
+
 export const useAddEmailAccessMutation = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: ({ DocId, shareEmail } : { DocId : string | undefined, shareEmail: EmailAccessEntry[] }) =>
+		mutationFn: ({ DocId, shareEmail } : { DocId : string, shareEmail: EmailAccessEntry[] }) =>
 			axiosPrivate.put('/doc/add-email-access', { DocId, shareEmail }),
 	});
 };
@@ -170,7 +196,7 @@ export const useUpdateEmailAccessMutation = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: ({ DocId, updatedAccessData } : { DocId : string | undefined, updatedAccessData: EmailAccessEntry[] }) =>
+		mutationFn: ({ DocId, updatedAccessData } : { DocId : string, updatedAccessData: EmailAccessEntry[] }) =>
 			axiosPrivate.put('/doc/update-email-access', { DocId, updatedAccessData }),
 	});
 };
@@ -179,7 +205,7 @@ export const useAddLinkAccessMutation = () => {
 	const axiosPrivate = useAxiosPrivate();
 
 	return useMutation({
-		mutationFn: ({ DocId, linkShare, linkShareType } : { DocId : string | undefined , linkShare: boolean, linkShareType: "view" | "edit"}) =>
+		mutationFn: ({ DocId, linkShare, linkShareType } : { DocId : string, linkShare: boolean, linkShareType: "view" | "edit"}) =>
 			axiosPrivate.put('/doc/add-link-access', { DocId, linkShare, linkShareType }),
 	});
 };

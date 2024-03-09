@@ -16,7 +16,7 @@ const HiddenTemplate = () => {
 						templateDetails[1].map((each, i) => {
 						    return (	
 								<EachDocCard
-									DocId={"id" + i}
+									index={i}
 									ImgC={each.img}
 									Name={each.name}
 									SubTitle={each.subtitile}
@@ -35,7 +35,7 @@ const HiddenTemplate = () => {
 						templateDetails[2].map((each, i) => {
 						    return (	
 								<EachDocCard
-									DocId={"id" + i}
+									index={i}
 									ImgC={each.img}
 									Name={each.name}
 									SubTitle={each.subtitile}
@@ -54,7 +54,7 @@ const HiddenTemplate = () => {
 						templateDetails[3].map((each, i) => {
 						    return (	
 								<EachDocCard
-									DocId={"id" + i}
+									index={i}
 									ImgC={each.img}
 									Name={each.name}
 									SubTitle={each.subtitile}
@@ -73,7 +73,7 @@ const HiddenTemplate = () => {
 						templateDetails[4].map((each, i) => {
 						    return (	
 								<EachDocCard
-									DocId={"id" + i}
+									index={i}
 									ImgC={each.img}
 									Name={each.name}
 									SubTitle={each.subtitile}
@@ -92,7 +92,7 @@ const HiddenTemplate = () => {
 						templateDetails[5].map((each, i) => {
 						    return (	
 								<EachDocCard
-									DocId={"id" + i}
+									index={i}
 									ImgC={each.img}
 									Name={each.name}
 									SubTitle={each.subtitile}

@@ -52,10 +52,11 @@ type SaveDocCardProps = {
 	ImgC: string;
 	Name: string;
 	SubTitle: string;
+	isDisabled: boolean;
 };
 
 type EachDocCardProps = {
-	DocId: string;
+	index: Number;
 	ImgC: string;
 	Name: string;
 	SubTitle: string;

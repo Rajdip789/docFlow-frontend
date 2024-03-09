@@ -42,6 +42,7 @@ const AllSaveDocuments = ({ IsSort, CreatedBy }: { IsSort: boolean, CreatedBy: s
 					allUserDocs.map((each, i) => {
 						return (
 							<SaveDocCard
+								isDisabled={each.owner_id !== user.id}
 								DocId={each._id}
 								ImgC={cv}
 								Name={each.title}

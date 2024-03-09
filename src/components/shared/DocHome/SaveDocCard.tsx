@@ -8,7 +8,7 @@ import { MdDeleteForever, MdDriveFileRenameOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useDeleteDocumentMutation, useRenameDocumentMutation } from "@/lib/react-query/queries";
 
-const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
+const SaveDocCard = ({ isDisabled, DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 	const [docName, setDocName] = useState(Name);
 	const navigate = useNavigate();
 
@@ -55,6 +55,7 @@ const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 							<AlertDialog>
 								<AlertDialogTrigger asChild>
 									<DropdownMenuItem
+										disabled={isDisabled}
 										onSelect={(e) => e.preventDefault()}
 										className="flex items-center py-1 px-2 rounded-sm hover:!bg-violet-200 cursor-pointer">
 										<MdDriveFileRenameOutline className="mr-3" />
@@ -94,6 +95,7 @@ const SaveDocCard = ({ DocId, ImgC, Name, SubTitle }: SaveDocCardProps) => {
 							<AlertDialog>
 								<AlertDialogTrigger asChild>
 									<DropdownMenuItem
+										disabled={isDisabled}
 										onSelect={(e) => e.preventDefault()}
 										className="flex items-center py-1 px-2 rounded-sm hover:!bg-violet-200 cursor-pointer">
 										<MdDeleteForever className="mr-3" />
