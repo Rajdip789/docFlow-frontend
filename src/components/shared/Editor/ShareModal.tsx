@@ -24,7 +24,7 @@ interface Data {
 	users: { username: string, email: string }[];
 }
 
-const ShareModal = ({ DocId }: { DocId: string }) => {
+const ShareModal = ({ DocId, open, setOpen }: { DocId: string, open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
 	//Context and queries
 	const { user } = useAuth();
 	const addLinkAccessMutation = useAddLinkAccessMutation();
@@ -170,20 +170,27 @@ const ShareModal = ({ DocId }: { DocId: string }) => {
 		isModified && updateEmailAccessMutation.mutate({ DocId, updatedAccessData: accessedEmails });
 	}
 
+	/**  
+	 * Start fetching data and set animation when Dialog opens    
+	 **/
+
+	useEffect(() => {
+		if (open) {
+			setIsAnimation(true);
+			refetch();
+		}
+	}, [open])
+
 	return (
 		<div>
-			<AlertDialog>
-				<AlertDialogTrigger
-					asChild
-					onClick={() => {
-						setIsAnimation(true);
-						refetch();
-					}}
-				>
-					<Button variant="default" className="py-2 px-6 h-fit w-fit">
-						Share
-					</Button>
-				</AlertDialogTrigger>
+			<Button
+				variant="default"
+				className="py-2 px-6 h-fit w-fit"
+				onClick={() => setOpen(true)}
+			>
+				Share
+			</Button>
+			<AlertDialog open={open} onOpenChange={setOpen}>
 				<AlertDialogContent className="md:w-2/3 min-h-40 rounded-md">
 					{isPending || isAnimation ? (
 						<div className="flex h-full w-full justify-center items-center">

@@ -1,6 +1,6 @@
-import Quill from 'quill'
+import Quill, { Sources, TextChangeHandler } from 'quill'
 import "quill/dist/quill.snow.css"
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
 import useSocket from '@/hooks/useSocket';
@@ -10,6 +10,8 @@ import EditorHeader from '@/components/shared/Editor/EditorHeader';
 import { MdErrorOutline } from 'react-icons/md';
 import { useGetDocumentQuery } from '@/lib/react-query/queries';
 import { SAVE_INTERVAL_MS, templateStrings, toolbar } from '@/constants';
+import Delta from 'quill-delta';
+import { AppDataContext } from '@/context/AppDataProvider';
 
 interface IdType {
 	docId: string
@@ -18,27 +20,50 @@ interface IdType {
 const DocumentEditor = () => {
 	const location = useLocation();
 	const { docId } = useParams<keyof IdType>() as IdType
+	const { setDoc } = useContext(AppDataContext);
 	const { isPending, isError, data } = useGetDocumentQuery(docId);
+	const [socketReady, setSocketReady] = useState(false);
+	const [isSaved, setIsSaved] = useState(true);
 
 	const socket = useSocket();
 	const [quill, setQuill] = useState<Quill>()
 
 	useEffect(() => {
-		if (socket == null || quill == null || !data) return;
-
-		const content = data?.data?.doc?.content;
-
-		if (location?.state?.index) quill.clipboard.dangerouslyPasteHTML(0, templateStrings[location?.state?.index]);
-		else quill.setContents(content);
-		quill.enable()
-
+		if(!socket || !quill || !data) return;
+		setSocketReady(true);
 	}, [socket, quill, data])
+	
+	//Load document
+	useEffect(() => {
 
+		if (socketReady && socket && quill && data) {
+
+			const docs = data?.data?.doc;
+
+			setDoc({
+				id: docs._id,
+				title: docs.title,
+				owner_id: docs.owner_id,
+				email_access: docs.email_access,
+				updatedAt: docs.updatedAt,
+				linkIsActive: docs.link_access.is_active
+			})
+
+			socket.emit('ready', docId);
+
+			if (location?.state?.index) quill.clipboard.dangerouslyPasteHTML(0, templateStrings[location?.state?.index]);
+			else quill.setContents(docs.content);
+			quill.enable()
+		}
+
+	}, [socketReady])
+
+	//Auto save
 	useEffect(() => {
 		if (socket == null || quill == null) return;
 
 		const interval = setInterval(() => {
-			socket.emit("save-document", docId, quill.getContents())
+			socket.emit("save-document", docId, quill.getContents());
 		}, SAVE_INTERVAL_MS)
 
 		return () => {
@@ -46,12 +71,57 @@ const DocumentEditor = () => {
 		}
 	}, [socket, quill])
 
-	const wrapperRef = useCallback((wrapper: { innerHTML: string; append: (arg0: HTMLDivElement) => void; } | null) => {
+	useEffect(() => {
+		if (socket == null) return
+
+		const handler = () => {
+			setIsSaved(true);
+		}
+		socket.on("save-document-success", handler)
+
+		return () => {
+			socket.off("save-document-success", handler)
+		}
+	}, [socket])
+
+	useEffect(() => {
+		if (socket == null || quill == null) return
+
+		const handler = (delta: Delta) => {
+			console.log("receive changes", delta);
+			quill.updateContents(delta)
+		}
+		socket.on("receive-changes", handler)
+
+		return () => {
+			socket.off("receive-changes", handler)
+		}
+	}, [socket, quill])
+
+	useEffect(() => {
+		if (socket == null || quill == null) return
+
+		const handler: TextChangeHandler = (delta: Delta, oldDelta: Delta, source: Sources) => {
+			if (source !== "user") return;
+			setIsSaved(false);
+
+			socket.emit("send-changes", delta)
+		}
+		quill.on("text-change", handler)
+
+		return () => {
+			quill.off("text-change", handler)
+		}
+	}, [socket, quill])
+
+
+	const wrapperRef = useCallback((wrapper: HTMLDivElement) => {
 		if (wrapper == null) return;
 
 		wrapper.innerHTML = ""
 		const editor = document.createElement("div")
 		wrapper.append(editor);
+		//: { innerHTML: string; append: (arg0: HTMLDivElement) => void; } | null
 
 		const q = new Quill(editor, {
 			theme: "snow",
@@ -79,11 +149,12 @@ const DocumentEditor = () => {
 
 	return (
 		<div className='w-full min-w-[768px] bg-violet-100 !overflow-y-scroll'>
-			<EditorHeader name={location?.state?.Name} DocId={docId} />
+			<EditorHeader DocId={docId} saveState={isSaved} />
 			<div className='mt-[4.5rem] bg-violet-100'>
-				<div className='container' ref={wrapperRef}></div>
+				<div className='container' ref={wrapperRef}>
+					{/* <div ref={wrapperRef}></div> */}
+				</div>
 			</div>
-
 		</div>
 	)
 }

@@ -1,24 +1,41 @@
 import { Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar"
+import { createDocumentMutation } from "@/lib/react-query/queries";
+import { useState } from "react";
+import { Link } from "react-router-dom"
 
+const EditorMenu = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+	const [fullScreen, setFullScreen] = useState(false);
+	const documentMutation = createDocumentMutation(0);
 
-const EditorMenu = () => {
+	const handleToggleFullScreen = () => {
+		const element = document.documentElement;
+
+		if (fullScreen || document.fullscreenElement) {
+			document.exitFullscreen();
+			setFullScreen(false);
+		} else {
+			element.requestFullscreen();
+			setFullScreen(true);
+		}
+	}
+
 	return (
 		<Menubar className="bg-inherit border-none h-6 p-0">
 			<MenubarMenu>
 				<MenubarTrigger className="cursor-pointer">File</MenubarTrigger>
 				<MenubarContent>
-					<MenubarItem>
-						New Tab
+					<MenubarItem onClick={() => documentMutation.mutate()}>
+						New
 					</MenubarItem>
-					<MenubarItem>
+					<MenubarItem onClick={() => window.open(`/home`, '_blank')}>
 						New Window
 					</MenubarItem>
 					<MenubarSeparator />
 					<MenubarSub>
 						<MenubarSubTrigger>Share</MenubarSubTrigger>
 						<MenubarSubContent>
-							<MenubarItem>Email</MenubarItem>
-							<MenubarItem>Link</MenubarItem>
+							<MenubarItem onClick={() => setOpen((state) => !state)}>Email</MenubarItem>
+							<MenubarItem onClick={() => setOpen((state) => !state)}>Link</MenubarItem>
 						</MenubarSubContent>
 					</MenubarSub>
 					<MenubarSeparator />
@@ -40,7 +57,7 @@ const EditorMenu = () => {
 					<MenubarSub>
 						<MenubarSubTrigger>Find</MenubarSubTrigger>
 						<MenubarSubContent>
-							<MenubarItem>Search the web</MenubarItem>
+							<MenubarItem onClick={() => window.open('https://google.com')}>Search the web</MenubarItem>
 							<MenubarSeparator />
 							<MenubarItem>Find...</MenubarItem>
 						</MenubarSubContent>
@@ -59,24 +76,30 @@ const EditorMenu = () => {
 						Always Show Full URLs
 					</MenubarCheckboxItem>
 					<MenubarSeparator />
-					<MenubarItem inset>
+					<MenubarItem inset onClick={() => window.location.reload()}>
 						Reload
 					</MenubarItem>
-					<MenubarItem disabled inset>
+					<MenubarItem disabled inset onClick={() => location.reload()}>
 						Force Reload
 					</MenubarItem>
 					<MenubarSeparator />
-					<MenubarItem inset>Toggle Fullscreen</MenubarItem>
+					<MenubarItem inset onClick={handleToggleFullScreen}>Toggle Fullscreen</MenubarItem>
 				</MenubarContent>
 			</MenubarMenu>
 			<MenubarMenu>
 				<MenubarTrigger className="cursor-pointer">Profile</MenubarTrigger>
 				<MenubarContent>
 					<MenubarSeparator />
-					<MenubarItem inset>View</MenubarItem>
-					<MenubarItem inset>Edit...</MenubarItem>
+					<Link to="/profile">
+						<MenubarItem inset>View</MenubarItem>
+					</Link>
+					<Link to="/profile">
+						<MenubarItem inset>Edit...</MenubarItem>
+					</Link>
 					<MenubarSeparator />
-					<MenubarItem inset>Delete</MenubarItem>
+					<Link to="/profile">
+						<MenubarItem inset>Delete</MenubarItem>
+					</Link>
 				</MenubarContent>
 			</MenubarMenu>
 		</Menubar>

@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SignupValidation, LoginValidation } from "../validation";
 import useAuth from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const setUserDataAndAuth = ({ setUser, setIsAuthenticated } : Omit<IContextType, 'user'| 'isAuthenticated'>) => (data: any) => {
 	const userData: ResponseUser = data.data.user;
@@ -96,7 +96,8 @@ export const useRenameDocumentMutation = () => {
 			axiosPrivate.put(`/doc/rename-docs/${DocId}`, {title : docName}),
 
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['getAllDocs'], exact: true, })
+			queryClient.invalidateQueries({ queryKey: ['getAllDocs'], exact: true, }),
+			queryClient.invalidateQueries({ queryKey: ['getDoc'], exact: true, })
 		}
 	});
 };
@@ -121,7 +122,9 @@ export const useUpdateUserMutation = () => {
 
 	return useMutation({
 		mutationFn: (userData : { formData: FormData, UserId: string }) =>
-			axiosPrivate.put(`/user/update-account/${userData.UserId}`, userData.formData),
+			axiosPrivate.put(`/user/update-account/${userData.UserId}`, userData.formData, { headers: {
+				'Content-Type': 'multipart/form-data'
+			}}),
 
 		onSuccess: (data: any) => {
 			const userData: ResponseUser = data.data.updatedUser;
@@ -175,10 +178,11 @@ export const useGetDocumentInfoQuery = (DocId : string) => {
 
 export const useGetDocumentQuery = (DocId : string) => {
 	const axiosPrivate = useAxiosPrivate();
+	const pathname = useLocation().pathname.split('/')[1];
 
 	return useQuery({
 		queryKey: ['getDoc'],
-		queryFn: () => axiosPrivate.get(`/doc/get-docs-content/${DocId}`),
+		queryFn: () => axiosPrivate.get(`/doc/get-docs-content/${DocId}?pathname=${pathname}`),
 		retry: 1,
 	});
 };
