@@ -34,9 +34,11 @@ const Profile = () => {
 							Profile
 						</DropdownMenuItem>
 					</Link>
-					<DropdownMenuItem className="flex items-center cursor-pointer">
-						<IoDocumentTextOutline className="size-5 mr-2" /> All Documents
-					</DropdownMenuItem>
+					<Link to="/home">
+						<DropdownMenuItem className="flex items-center cursor-pointer">
+							<IoDocumentTextOutline className="size-5 mr-2" /> All Documents
+						</DropdownMenuItem>
+					</Link>
 					<DropdownMenuItem className="flex items-center cursor-pointer">
 						<IoSettingsOutline className="size-5 mr-2" />
 						Notifications

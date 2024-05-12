@@ -101,7 +101,7 @@ const DocumentEditor = () => {
 	useEffect(() => {
 		if (socket == null || quill == null) return
 
-		const handler: TextChangeHandler = (delta: Delta, oldDelta: Delta, source: Sources) => {
+		const handler: TextChangeHandler = (delta: Delta, _oldDelta: Delta, source: Sources) => {
 			if (source !== "user") return;
 			setIsSaved(false);
 

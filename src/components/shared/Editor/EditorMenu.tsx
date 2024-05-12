@@ -1,7 +1,8 @@
-import { Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar"
-import { createDocumentMutation } from "@/lib/react-query/queries";
 import { useState } from "react";
 import { Link } from "react-router-dom"
+
+import { createDocumentMutation } from "@/lib/react-query/queries";
+import { Menubar, MenubarCheckboxItem, MenubarContent, MenubarItem, MenubarMenu, MenubarSeparator, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger } from "@/components/ui/menubar"
 
 const EditorMenu = ({ setOpen }: { setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
 	const [fullScreen, setFullScreen] = useState(false);
