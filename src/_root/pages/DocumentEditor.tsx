@@ -13,26 +13,30 @@ import { SAVE_INTERVAL_MS, templateStrings, toolbar } from '@/constants';
 import Delta from 'quill-delta';
 import { AppDataContext } from '@/context/AppDataProvider';
 
+import { saveAs } from 'file-saver';
+import * as quillToWord from 'quill-to-word';
+
 interface IdType {
 	docId: string
 }
 
 const DocumentEditor = () => {
 	const location = useLocation();
+	const { doc, setDoc } = useContext(AppDataContext);
 	const { docId } = useParams<keyof IdType>() as IdType
-	const { setDoc } = useContext(AppDataContext);
 	const { isPending, isError, data } = useGetDocumentQuery(docId);
-	const [socketReady, setSocketReady] = useState(false);
+
 	const [isSaved, setIsSaved] = useState(true);
+	const [socketReady, setSocketReady] = useState(false);
 
 	const socket = useSocket();
 	const [quill, setQuill] = useState<Quill>()
 
 	useEffect(() => {
-		if(!socket || !quill || !data) return;
+		if (!socket || !quill || !data) return;
 		setSocketReady(true);
 	}, [socket, quill, data])
-	
+
 	//Load document
 	useEffect(() => {
 
@@ -84,11 +88,12 @@ const DocumentEditor = () => {
 		}
 	}, [socket])
 
+
+	/* Send and receive changes */
 	useEffect(() => {
 		if (socket == null || quill == null) return
 
 		const handler = (delta: Delta) => {
-			console.log("receive changes", delta);
 			quill.updateContents(delta)
 		}
 		socket.on("receive-changes", handler)
@@ -114,14 +119,12 @@ const DocumentEditor = () => {
 		}
 	}, [socket, quill])
 
-
 	const wrapperRef = useCallback((wrapper: HTMLDivElement) => {
 		if (wrapper == null) return;
 
 		wrapper.innerHTML = ""
-		const editor = document.createElement("div")
+		const editor = document.createElement("div");
 		wrapper.append(editor);
-		//: { innerHTML: string; append: (arg0: HTMLDivElement) => void; } | null
 
 		const q = new Quill(editor, {
 			theme: "snow",
@@ -131,6 +134,12 @@ const DocumentEditor = () => {
 
 		setQuill(q);
 	}, [])
+
+	const handleDownload = async () => {
+		const quillDelta = quill!.getContents();
+		const docAsBlob = await quillToWord.generateWord(quillDelta, { exportAs: 'blob' }) as Blob;
+		saveAs(docAsBlob, `${doc.title}.docx`);
+	}
 
 	if (isPending) return <LoadingUi />
 
@@ -149,7 +158,7 @@ const DocumentEditor = () => {
 
 	return (
 		<div className='w-full min-w-[768px] bg-violet-100 !overflow-y-scroll'>
-			<EditorHeader DocId={docId} saveState={isSaved} />
+			<EditorHeader DocId={docId} saveState={isSaved} handleDownload={handleDownload} quill={quill as Quill} />
 			<div className='mt-[4.5rem] bg-violet-100'>
 				<div className='container' ref={wrapperRef}>
 					{/* <div ref={wrapperRef}></div> */}

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom"
 import { useContext, useState } from "react";
+
+import Quill from 'quill'
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
 
@@ -18,7 +20,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 
 dayjs.extend(relativeTime);
 
-const EditorHeader = ({ DocId, saveState }: { DocId: string, saveState: boolean }) => {
+const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: string, saveState: boolean, handleDownload: ()=> {}, quill: Quill }) => {
 	const { doc, setDoc } = useContext(AppDataContext);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const renameDocumentMutation = useRenameDocumentMutation();
@@ -64,7 +66,7 @@ const EditorHeader = ({ DocId, saveState }: { DocId: string, saveState: boolean 
 							}
 						</div>
 						{/* Menu */}
-						<EditorMenu setOpen={setIsModalOpen} />
+						<EditorMenu setOpen={setIsModalOpen} handleDownload={handleDownload} quill={quill}/>
 					</div>
 				</div>
 
