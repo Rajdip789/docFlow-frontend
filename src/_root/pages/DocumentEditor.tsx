@@ -26,7 +26,7 @@ const DocumentEditor = () => {
 	const { docId } = useParams<keyof IdType>() as IdType
 	const { isPending, isError, data } = useGetDocumentQuery(docId);
 
-	const [isSaved, setIsSaved] = useState(true);
+	const [isSaved, setIsSaved] = useState<'saved' | 'unsaved' | 'saving'>('saved');
 	const [socketReady, setSocketReady] = useState(false);
 
 	const socket = useSocket();
@@ -67,6 +67,7 @@ const DocumentEditor = () => {
 		if (socket == null || quill == null) return;
 
 		const interval = setInterval(() => {
+			setIsSaved(() => 'saving');
 			socket.emit("save-document", docId, quill.getContents());
 		}, SAVE_INTERVAL_MS)
 
@@ -75,11 +76,12 @@ const DocumentEditor = () => {
 		}
 	}, [socket, quill])
 
+	//Get save status
 	useEffect(() => {
 		if (socket == null) return
 
 		const handler = () => {
-			setIsSaved(true);
+			setIsSaved('saved');
 		}
 		socket.on("save-document-success", handler)
 
@@ -88,8 +90,7 @@ const DocumentEditor = () => {
 		}
 	}, [socket])
 
-
-	/* Send and receive changes */
+	// Send and receive changes
 	useEffect(() => {
 		if (socket == null || quill == null) return
 
@@ -108,9 +109,8 @@ const DocumentEditor = () => {
 
 		const handler: TextChangeHandler = (delta: Delta, _oldDelta: Delta, source: Sources) => {
 			if (source !== "user") return;
-			setIsSaved(false);
-
-			socket.emit("send-changes", delta)
+			setIsSaved('unsaved');
+			socket.emit("send-changes", delta);
 		}
 		quill.on("text-change", handler)
 
@@ -135,6 +135,7 @@ const DocumentEditor = () => {
 		setQuill(q);
 	}, [])
 
+	//Document download
 	const handleDownload = async () => {
 		const quillDelta = quill!.getContents();
 		const docAsBlob = await quillToWord.generateWord(quillDelta, { exportAs: 'blob' }) as Blob;
@@ -161,7 +162,6 @@ const DocumentEditor = () => {
 			<EditorHeader DocId={docId} saveState={isSaved} handleDownload={handleDownload} quill={quill as Quill} />
 			<div className='mt-[4.5rem] bg-violet-100'>
 				<div className='container' ref={wrapperRef}>
-					{/* <div ref={wrapperRef}></div> */}
 				</div>
 			</div>
 		</div>

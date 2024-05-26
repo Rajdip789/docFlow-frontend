@@ -11,6 +11,7 @@ import ShareModal from "./ShareModal";
 import Logo from "@/assets/logo.png";
 
 import { MdOutlineMessage } from "react-icons/md";
+import { IoCloudOfflineOutline } from "react-icons/io5";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { FaArrowsRotate, FaClockRotateLeft } from "react-icons/fa6";
 
@@ -20,7 +21,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 
 dayjs.extend(relativeTime);
 
-const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: string, saveState: boolean, handleDownload: ()=> {}, quill: Quill }) => {
+const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: string, saveState: 'saved' | 'unsaved' | 'saving', handleDownload: () => {}, quill: Quill }) => {
 	const { doc, setDoc } = useContext(AppDataContext);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const renameDocumentMutation = useRenameDocumentMutation();
@@ -50,7 +51,7 @@ const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: stri
 							/>
 
 							{
-								saveState ?
+								saveState === 'saved' ?
 									<HoverCard openDelay={300}>
 										<HoverCardTrigger className="cursor-pointer text-violet-700">
 											<IoIosCheckmarkCircleOutline size={24} />
@@ -59,14 +60,19 @@ const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: stri
 											Changes saved
 										</HoverCardContent>
 									</HoverCard> :
-									<div className="app-flex gap-1">
-										<FaArrowsRotate size={18} color='#6b51c9' />
-										<span className="">Saving...</span>
-									</div>
+									saveState === 'unsaved' ?
+										<div className="app-flex gap-1">
+											<IoCloudOfflineOutline size={20} color='#6403ff' />
+											<span className="">Unsaved</span>
+										</div> :
+										<div className="app-flex gap-1">
+											<FaArrowsRotate size={18} color='#6b51c9' />
+											<span className="">Saving...</span>
+										</div>
 							}
 						</div>
 						{/* Menu */}
-						<EditorMenu setOpen={setIsModalOpen} handleDownload={handleDownload} quill={quill}/>
+						<EditorMenu setOpen={setIsModalOpen} handleDownload={handleDownload} quill={quill} />
 					</div>
 				</div>
 
@@ -82,16 +88,13 @@ const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: stri
 					</HoverCard>
 
 					{/* Comment section*/}
-					{/* <div className="app-flex w-10 h-10 cursor-pointer rounded-full hover:bg-violet-200">
-						<MdOutlineMessage size={23} />
-					</div> */}
 					<HoverCard openDelay={300}>
 						<HoverCardTrigger className="app-flex w-10 h-10 cursor-pointer rounded-full hover:bg-violet-200">
 							<MdOutlineMessage size={23} />
 						</HoverCardTrigger>
 						<HoverCardContent side="left" className="bg-black text-xs text-white w-fit py-1 px-3 cursor-default">
 							Show all comments
-						</HoverCardContent>	
+						</HoverCardContent>
 					</HoverCard>
 
 					<ShareModal DocId={DocId} open={isModalOpen} setOpen={setIsModalOpen} />

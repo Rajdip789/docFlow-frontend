@@ -95,9 +95,9 @@ export const useRenameDocumentMutation = () => {
 		mutationFn: ({ DocId, docName }: { DocId: string, docName: string }) =>
 			axiosPrivate.put(`/doc/rename-docs/${DocId}`, {title : docName}),
 
-		onSuccess: () => {
+		onSuccess: (data) => {
 			queryClient.invalidateQueries({ queryKey: ['getAllDocs'], exact: true, }),
-			queryClient.invalidateQueries({ queryKey: ['getDoc'], exact: true, })
+			queryClient.invalidateQueries({ queryKey: [data.data?.doc?.id] })
 		}
 	});
 };
@@ -181,9 +181,10 @@ export const useGetDocumentQuery = (DocId : string) => {
 	const pathname = useLocation().pathname.split('/')[1];
 
 	return useQuery({
-		queryKey: ['getDoc'],
+		queryKey: ['getDoc', DocId],
 		queryFn: () => axiosPrivate.get(`/doc/get-docs-content/${DocId}?pathname=${pathname}`),
 		retry: 1,
+		gcTime: 1000
 	});
 };
 

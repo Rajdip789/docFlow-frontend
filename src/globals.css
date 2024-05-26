@@ -89,10 +89,9 @@
 }
 
 .ql-container {
-  margin: 10px;
   border: 1px solid #a7a7bd !important;
-  display: flex;
-  justify-content: center;
+  width: max-content;
+  margin: 10px auto;
 }
 
 .container .ql-toolbar.ql-snow {
