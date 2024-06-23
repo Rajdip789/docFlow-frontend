@@ -214,3 +214,55 @@ export const useAddLinkAccessMutation = () => {
 			axiosPrivate.put('/doc/add-link-access', { DocId, linkShare, linkShareType }),
 	});
 };
+
+export const useAddCommentMutation = (DocId: string) => {
+	const { user } = useAuth();
+	const queryClient = useQueryClient()
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: (comment: string) =>
+			axiosPrivate.post('/doc/save-comment', { docId: DocId, userId: user.id, username: user.username, comment: comment }),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [DocId+'comment'], exact: true, })
+		}
+	});
+};
+
+export const useGetCommentsQuery = (DocId : string) => {
+	const axiosPrivate = useAxiosPrivate();
+
+	return useQuery({
+		queryKey: [DocId+'comment'],
+		queryFn: () => axiosPrivate.get(`/doc/get-comments/${DocId}`),
+	});
+};
+
+export const useDeleteCommentMutation = (DocId : string) => {
+	const queryClient = useQueryClient()
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: (CommentId : string) =>
+			axiosPrivate.delete(`/doc/delete-comment/${CommentId}`),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [DocId+'comment'], exact: true, })
+		}
+	});
+};
+
+export const useEditCommentMutation = (DocId : string) => {
+	const queryClient = useQueryClient()
+	const axiosPrivate = useAxiosPrivate();
+
+	return useMutation({
+		mutationFn: ({ CommentId, comment } : { CommentId: string, comment: string }) =>
+			axiosPrivate.put(`/doc/edit-comment/${CommentId}`, { comment }),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: [DocId+'comment'], exact: true, })
+		}
+	});
+};

@@ -17,7 +17,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { MdEdit, MdFullscreen, MdFullscreenExit, MdOutlineComment, MdOutlineContentCopy, MdOutlineContentCut, MdOutlineContentPaste, MdOutlineDesktopWindows } from "react-icons/md";
 
 
-const EditorMenu = ({ setOpen, handleDownload, quill }: { setOpen: React.Dispatch<React.SetStateAction<boolean>>, handleDownload: () => {}, quill: Quill }) => {
+const EditorMenu = ({ setOpen, handleDownload, setIsCommentSectionOpen, quill }: { setOpen: React.Dispatch<React.SetStateAction<boolean>>, handleDownload: () => {}, setIsCommentSectionOpen: React.Dispatch<React.SetStateAction<boolean>>,  quill: Quill }) => {
 	const [fullScreen, setFullScreen] = useState(false);
 	const documentMutation = createDocumentMutation(0);
 
@@ -107,7 +107,7 @@ const EditorMenu = ({ setOpen, handleDownload, quill }: { setOpen: React.Dispatc
 					<MenubarCheckboxItem> Always Show Bookmarks Bar </MenubarCheckboxItem>
 					<MenubarCheckboxItem checked> Always Show Full URLs </MenubarCheckboxItem>
 					<MenubarSeparator />
-					<MenubarItem className="gap-2"><MdOutlineComment size={16}/> Comments </MenubarItem>
+					<MenubarItem className="gap-2" onClick={() => setIsCommentSectionOpen(prev => !prev)}><MdOutlineComment size={16}/> Comments </MenubarItem>
 					<MenubarItem className="gap-2" onClick={() => window.location.reload()}><TbReload size={16} /> Reload </MenubarItem>
 					<MenubarSeparator />
 					<MenubarItem className="gap-2" onClick={handleToggleFullScreen}>

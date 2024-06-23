@@ -21,7 +21,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 
 dayjs.extend(relativeTime);
 
-const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: string, saveState: 'saved' | 'unsaved' | 'saving', handleDownload: () => {}, quill: Quill }) => {
+const EditorHeader = ({ DocId, saveState, handleDownload, setIsCommentSectionOpen, quill }: { DocId: string, saveState: 'saved' | 'unsaved' | 'saving', handleDownload: () => {}, setIsCommentSectionOpen: React.Dispatch<React.SetStateAction<boolean>>, quill: Quill }) => {
 	const { doc, setDoc } = useContext(AppDataContext);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const renameDocumentMutation = useRenameDocumentMutation();
@@ -72,7 +72,7 @@ const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: stri
 							}
 						</div>
 						{/* Menu */}
-						<EditorMenu setOpen={setIsModalOpen} handleDownload={handleDownload} quill={quill} />
+						<EditorMenu setOpen={setIsModalOpen} handleDownload={handleDownload} setIsCommentSectionOpen={setIsCommentSectionOpen} quill={quill} />
 					</div>
 				</div>
 
@@ -89,7 +89,10 @@ const EditorHeader = ({ DocId, saveState, handleDownload, quill }: { DocId: stri
 
 					{/* Comment section*/}
 					<HoverCard openDelay={300}>
-						<HoverCardTrigger className="app-flex w-10 h-10 cursor-pointer rounded-full hover:bg-violet-200">
+						<HoverCardTrigger
+							className="app-flex w-10 h-10 cursor-pointer rounded-full hover:bg-violet-200"
+							onClick={() => setIsCommentSectionOpen((val) => !val)}
+						>
 							<MdOutlineMessage size={23} />
 						</HoverCardTrigger>
 						<HoverCardContent side="left" className="bg-black text-xs text-white w-fit py-1 px-3 cursor-default">

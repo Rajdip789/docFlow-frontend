@@ -73,3 +73,17 @@ interface EmailAccessEntry {
 	name: string;
 	type: string;
 }
+
+interface IdType {
+	docId: string
+}
+
+type commentType = {
+	_id: string,
+	user_id: string,
+	doc_id: string,
+	username: string,
+	msg: string,
+	createdAt: string,
+	updatedAt: string,
+}

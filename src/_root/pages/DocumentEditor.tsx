@@ -1,30 +1,32 @@
-import Quill, { Sources, TextChangeHandler } from 'quill'
+import ReactDOM from 'react-dom';
+import Delta from 'quill-delta';
 import "quill/dist/quill.snow.css"
+import Quill, { Sources, TextChangeHandler } from 'quill'
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-
-import useSocket from '@/hooks/useSocket';
-import LoadingUi from '@/components/shared/LoadingUi';
-import EditorHeader from '@/components/shared/Editor/EditorHeader';
-
-import { MdErrorOutline } from 'react-icons/md';
-import { useGetDocumentQuery } from '@/lib/react-query/queries';
-import { SAVE_INTERVAL_MS, templateStrings, toolbar } from '@/constants';
-import Delta from 'quill-delta';
-import { AppDataContext } from '@/context/AppDataProvider';
 
 import { saveAs } from 'file-saver';
 import * as quillToWord from 'quill-to-word';
 
-interface IdType {
-	docId: string
-}
+import useSocket from '@/hooks/useSocket';
+import LoadingUi from '@/components/shared/LoadingUi';
+import EditorHeader from '@/components/shared/Editor/EditorHeader';
+import CommentSection from '@/components/shared/Editor/CommentSection';
+
+import { MdErrorOutline } from 'react-icons/md';
+import { AppDataContext } from '@/context/AppDataProvider';
+import { useGetDocumentQuery } from '@/lib/react-query/queries';
+import { SAVE_INTERVAL_MS, templateStrings, toolbar } from '@/constants';
 
 const DocumentEditor = () => {
 	const location = useLocation();
 	const { doc, setDoc } = useContext(AppDataContext);
 	const { docId } = useParams<keyof IdType>() as IdType
 	const { isPending, isError, data } = useGetDocumentQuery(docId);
+
+	const [commentSectionDiv, setCommentSectionDiv] = useState<HTMLDivElement | null>(null);
+	const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+
 
 	const [isSaved, setIsSaved] = useState<'saved' | 'unsaved' | 'saving'>('saved');
 	const [socketReady, setSocketReady] = useState(false);
@@ -122,15 +124,20 @@ const DocumentEditor = () => {
 	const wrapperRef = useCallback((wrapper: HTMLDivElement) => {
 		if (wrapper == null) return;
 
-		wrapper.innerHTML = ""
+		wrapper.innerHTML = "";
 		const editor = document.createElement("div");
+		const commentDiv = document.createElement("div");
+
 		wrapper.append(editor);
+		setCommentSectionDiv(commentDiv); // Save the reference to commentDiv
 
 		const q = new Quill(editor, {
 			theme: "snow",
 			modules: { toolbar },
 			placeholder: 'Start writing...',
 		})
+
+		q.addContainer(commentDiv);
 
 		setQuill(q);
 	}, [])
@@ -159,9 +166,10 @@ const DocumentEditor = () => {
 
 	return (
 		<div className='w-full min-w-[768px] bg-violet-100 !overflow-y-scroll'>
-			<EditorHeader DocId={docId} saveState={isSaved} handleDownload={handleDownload} quill={quill as Quill} />
+			<EditorHeader DocId={docId} saveState={isSaved} handleDownload={handleDownload} setIsCommentSectionOpen={setIsCommentSectionOpen} quill={quill as Quill} />
 			<div className='mt-[4.5rem] bg-violet-100'>
 				<div className='container' ref={wrapperRef}>
+				{commentSectionDiv && ReactDOM.createPortal(<CommentSection isCommentSectionOpen={isCommentSectionOpen} setIsCommentSectionOpen={setIsCommentSectionOpen} />, commentSectionDiv)}
 				</div>
 			</div>
 		</div>

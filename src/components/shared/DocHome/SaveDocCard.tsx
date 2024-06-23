@@ -16,10 +16,12 @@ const SaveDocCard = ({ isDisabled, DocId, ImgC, Name, SubTitle }: SaveDocCardPro
 	const deleteDocumentMutation = useDeleteDocumentMutation();
 
 	const handleRenameDocument = () => {
+		if(isDisabled) return;
 		renameDocumentMutation.mutate({ DocId, docName });
 	}
 
 	const handleDeleteDocument = () => {
+		if(isDisabled) return;
 		deleteDocumentMutation.mutate(DocId);
 	}
 
