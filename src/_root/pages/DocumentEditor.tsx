@@ -96,8 +96,10 @@ const DocumentEditor = () => {
 	useEffect(() => {
 		if (socket == null || quill == null) return
 
-		const handler = (delta: Delta) => {
-			quill.updateContents(delta)
+		const handler = ({ senderId, delta }: { senderId: string, delta: Delta}) => {
+			if(senderId !== socket.id) {
+				quill.updateContents(delta)
+			}
 		}
 		socket.on("receive-changes", handler)
 
